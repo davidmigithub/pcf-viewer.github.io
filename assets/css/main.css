@@ -279,36 +279,89 @@ body {
    ========================== */
 #sideMenu {
   position: fixed;
-  left: 0; top: 0;
+  left: 0;
+  top: 0;
   height: 100vh;
-  width: 40px;
+  width: 25px;
   background-color: #1e1e1e;
   overflow: hidden;
-  transition: width 0.3s ease 0.5s;
   cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+
+  /* nur Width animieren, mit Delay nur beim Ausklappen */
+  transition: width 0.3s ease 0.5s;
 }
 
-/* Unicode-Chevron ᐳ, horizontal gestaucht */
+/* Pfeil-Icon */
 #sideMenu::before {
-  content: 'ᐳ';
+  content: '〉';
   position: absolute;
   top: 50%;
   right: 5px;
-  font-size: 20px;
+  font-size: 30px;
   color: #888;
-  transform: translateY(-50%) scaleX(0.5);
+  transform: translateY(-50%) scaleX(1);
   transform-origin: center;
   transition: transform 0.3s ease, color 0.3s ease;
 }
 
-/* beim Hover öffnet Menü */
+/* Aufgeklapptes Menu */
 #sideMenu:hover {
-  width: 200px;
+  /* fixe Ziel-Breite statt max-content */
+  min-width: 250px;           /* passe den Wert je nach Content an */
+  width: auto;
+  /* kein Delay beim Aufklappen */
   transition-delay: 0s;
 }
 
-/* Chevron drehen und heller färben */
 #sideMenu:hover::before {
-  transform: translateY(-50%) scaleX(0.5) rotate(180deg);
+  transform: translateY(-50%) scaleX(1) rotate(180deg);
   color: #ddd;
+}
+
+/* Menü-Inhalt */
+#sideMenu .menu-content {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  transition-delay: 0s;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  padding: 10px 8px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+#sideMenu:hover .menu-content {
+  opacity: 1;
+  /* erst sichtbar, wenn Breite schon aufgeklappt ist */
+  transition-delay: 0.3s;
+}
+
+#sideMenu .menu-content h3 {
+  color: #ddd;
+  margin: 12px 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#sideMenu .menu-content label {
+  color: #aaa;
+  font-size: 13px;
+  line-height: 1.4;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+
+#sideMenu .menu-content label:hover {
+  color: #fff;
+}
+
+#sideMenu .menu-content input[type="checkbox"] {
+  accent-color: #007bff;
+  margin-right: 6px;
+  vertical-align: middle;
 }
