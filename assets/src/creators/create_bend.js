@@ -4,7 +4,7 @@ import { BufferGeometryUtils } from "../vendor_mods/BufferGeometryUtils.js";
 
 /**
  * Erstellt ein Bend/Elbow zwischen zwei Endpunkten mit einem Mittelpunkt und verschlossenen Enden.
- * Unterstützte Typen: ELBOW, BEND, BEND-TEED
+ * Unterstützte Typen: ELBOW, BEND
  *
  * @param {Object} block       - rawBlock mit END-POINT (2), CENTRE-POINT (1) und DIAMETER
  * @param {string} pipelineRef - Referenz der Pipeline (für userData)

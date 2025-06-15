@@ -14,6 +14,7 @@
     html.no-flash {
       background-color: #151515;
     }
+    [hidden] { display: none !important; }
   </style>
 
   <!-- Main Styles & Favicon -->
@@ -35,7 +36,7 @@
   <div id="infoBox" class="info-box" style="display:none;"></div>
 
   <!-- Spinner Overlay -->
-  <div id="spinner-overlay" class="hidden">
+  <div id="spinner-overlay" hidden>
     <div id="spinner-box">
       <div id="spinner"></div>
       <div id="spinner-text">Loading…</div>
@@ -65,11 +66,9 @@
     <button id="copy-filename" aria-label="Dateiname kopieren">📋</button>
   </div>
 
-  <!-- App Container & Side Window -->
+  <!-- App Container & Side Menu -->
   <div id="app"></div>
-  <div id="mySideWindow" class="sidewindow">
-    <div id="objProp"></div>
-  </div>
+  <div id="sideMenu" hidden></div>
 
   <!-- Initialization Script -->
   <script>
@@ -78,7 +77,7 @@
       const fileInput = document.getElementById('file-input');
       const selectBtn = document.getElementById('select-file');
       const overlay = document.getElementById('filename-overlay');
-      const sideWindow = document.getElementById('mySideWindow');
+      const sideMenu = document.getElementById('sideMenu');
       const filenameEl = document.getElementById('filename-text');
       const copyBtn = document.getElementById('copy-filename');
       const spinnerOverlay = document.getElementById('spinner-overlay');
@@ -95,21 +94,21 @@
         card.classList.add('hidden');
 
         spinnerText.textContent = `Loading ${fl}…`;
-        spinnerOverlay.classList.remove('hidden');
+        spinnerOverlay.hidden = false;
 
         window.dispatchEvent(new CustomEvent('pcf-url', { detail: fl }));
       }
 
       // File handling logic
       function handleFile(file) {
-        sideWindow.innerHTML = '';
+        sideMenu.innerHTML = '';
 
         filenameEl.textContent = file.name;
         overlay.hidden = false;
         card.classList.add('hidden');
 
         spinnerText.textContent = `Generate ${file.name} …`;
-        spinnerOverlay.classList.remove('hidden');
+        spinnerOverlay.hidden = false;
 
         const blobUrl = URL.createObjectURL(file);
         window.dispatchEvent(new CustomEvent('pcf-url', { detail: blobUrl }));

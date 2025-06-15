@@ -161,7 +161,8 @@ export class PcfParser {
                 break;
             }
 
-            if (line.startsWith('PIPELINE-REFERENCE')) {
+            // Detect unindented PIPELINE-REFERENCE as new pipeline
+            if (raw.startsWith('PIPELINE-REFERENCE')) {
                 if (currentPipeline) {
                     flushComponent();
                     pipelines.push(currentPipeline);
@@ -177,15 +178,16 @@ export class PcfParser {
 
             if (!currentPipeline) continue;
 
+            // Gather header lines until a non-indented line appears
             if (!pipelineHeaderComplete) {
-                if (raw[0] === ' ') {
+                if (/^[ \t]/.test(raw)) {
                     pipelineHeaderLines.push(raw);
                 } else {
                     pipelineHeaderComplete = true;
                 }
             }
 
-            const isComponentHeader = raw[0] !== ' ' && pipelineHeaderComplete;
+            const isComponentHeader = /^[^ \t]/.test(raw) && pipelineHeaderComplete && !raw.startsWith('PIPELINE-REFERENCE');
             if (isComponentHeader) {
                 flushComponent();
                 const type = line.split(/\s+/)[0].toUpperCase();

@@ -62,9 +62,9 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 25%;
-  min-width: 400px;
+  min-width: 450px;
   height: 15%;
-  min-height: 150px;
+  min-height: 250px;
   padding: 40px 20px;
   background: #ffffff;
   border-radius: 20px;
@@ -78,11 +78,16 @@ body {
 .drag-hover .drop-card {
   background: #ffffff10;
   border: 2px dashed #007bff;
-  width: 75%;
+  width: calc(100vw - 20px);
   min-width: 450px;
-  height: 75%;
+  height: calc(100vh - 20px);
   min-height: 150px;
+
   transition: width .2s ease, height .2s ease, border .2s ease;
+}
+.drop-card,
+.drag-hover .drop-card {
+  box-sizing: border-box;
 }
 
 .drop-card.hidden {
@@ -98,6 +103,7 @@ body {
   justify-content: center;
   transition: opacity .2s ease;
   opacity: 1;
+  margin-top: -10px;
 }
 
 .drag-hover .drop-card-content {
@@ -155,9 +161,9 @@ body {
 }
 
 /* ==========================
-   Side Window
+   Side Menu
    ========================== */
-.sidewindow {
+.sideMenu {
   position: fixed;
   left: 20px;
   top: 50%;
@@ -178,7 +184,7 @@ body {
   display: none;
   background: rgba(0, 0, 0, 0.9);
   color: white;
-  padding: 8px;
+  padding: 15px;
   border-radius: 10px;
   font-size: 12px;
   pointer-events: none;
@@ -186,6 +192,7 @@ body {
   white-space: pre;
   text-align: left;
   overflow: auto;
+  border: 1px solid rgb(50, 50, 50);
 }
 
 #infoBox.info-box p,
@@ -265,4 +272,43 @@ body {
   top: 0;
   left: 0;
   z-index: 100;
+}
+
+/* ==========================
+   Side Menu (schmaler Streifen, klappt bei Hover auf)
+   ========================== */
+#sideMenu {
+  position: fixed;
+  left: 0; top: 0;
+  height: 100vh;
+  width: 40px;
+  background-color: #1e1e1e;
+  overflow: hidden;
+  transition: width 0.3s ease 0.5s;
+  cursor: pointer;
+}
+
+/* Unicode-Chevron ᐳ, horizontal gestaucht */
+#sideMenu::before {
+  content: 'ᐳ';
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  font-size: 20px;
+  color: #888;
+  transform: translateY(-50%) scaleX(0.5);
+  transform-origin: center;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* beim Hover öffnet Menü */
+#sideMenu:hover {
+  width: 200px;
+  transition-delay: 0s;
+}
+
+/* Chevron drehen und heller färben */
+#sideMenu:hover::before {
+  transform: translateY(-50%) scaleX(0.5) rotate(180deg);
+  color: #ddd;
 }

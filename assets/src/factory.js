@@ -19,7 +19,6 @@ export class ComponentFactory {
           break;
         case 'ELBOW':
         case 'BEND':
-        case 'BEND-TEED':
           mesh = createBend(block, pipelineRef, this.units);
           break;
         case 'REDUCER-CONCENTRIC':

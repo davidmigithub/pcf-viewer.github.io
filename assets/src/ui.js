@@ -3,6 +3,7 @@ export class UI {
         this.infoBox = document.getElementById('infoBox');
         this.spinnerOverlay = document.getElementById('spinner-overlay');
         this.filenameOverlay = document.getElementById('filename-overlay');
+        this.sideMenu = document.getElementById('sideMenu');
     }
 
     showInfo(block, x, y) {
@@ -39,12 +40,16 @@ export class UI {
     }
 
     showSpinner() {
-        this.spinnerOverlay.classList.remove('hidden');
+        this.spinnerOverlay.hidden = false;
+
         this.filenameOverlay.hidden = true;
+        this.sideMenu.hidden = true;
     }
 
     hideSpinner() {
-        this.spinnerOverlay.classList.add('hidden');
+        this.spinnerOverlay.hidden = true;
+
         this.filenameOverlay.hidden = false;
+        this.sideMenu.hidden = false;
     }
 }
