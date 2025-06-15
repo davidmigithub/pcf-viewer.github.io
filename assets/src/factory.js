@@ -1,0 +1,44 @@
+import { createPipe } from "./creators/create_pipe.js";
+import { createBend } from "./creators/create_bend.js";
+import { createReducerCon } from "./creators/create_reducer_con.js";
+import { createTee } from "./creators/create_tee.js";
+import { createFlange } from "./creators/create_flange.js";
+
+export class ComponentFactory {
+  constructor(units, materials) {
+    this.units = units;
+    this.materials = materials;
+  }
+
+  build({ block }, pipelineRef) {
+    let mesh = null;
+
+    switch (block.type.toUpperCase()) {
+        case 'PIPE':
+          mesh = createPipe(block, pipelineRef, this.units);
+          break;
+        case 'ELBOW':
+        case 'BEND':
+        case 'BEND-TEED':
+          mesh = createBend(block, pipelineRef, this.units);
+          break;
+        case 'REDUCER-CONCENTRIC':
+          mesh = createReducerCon(block, pipelineRef, this.units);
+          break;
+        case 'TEE':
+          mesh = createTee(block, pipelineRef, this.units);
+          break;
+        case 'FLANGE':
+          mesh = createFlange(block, pipelineRef, this.units);
+          break;
+
+      // TODO: add cases for ELBOW, TEE, FLANGE, etc.
+
+      default:
+        console.warn('ComponentFactory: Unsupported component type', block.type);
+        return null;
+    }
+
+    return mesh;
+  }
+}

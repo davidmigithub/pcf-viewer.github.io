@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html class="no-flash" lang="de">
+
+<head>
+  <!-- Meta & Fallback Styles -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    .no-flash body {
+      visibility: hidden;
+      background-color: #151515;
+    }
+
+    html.no-flash {
+      background-color: #151515;
+    }
+  </style>
+
+  <!-- Main Styles & Favicon -->
+  <link rel="stylesheet" href="assets/css/main.css" media="print"
+    onload="this.media='all';this.onload=null;document.documentElement.classList.remove('no-flash');">
+  <link rel="icon" href="assets/img/favicon.ico">
+
+  <title>PCF Viewer 0.11</title>
+
+  <!-- Main Script -->
+  <script type="module" src="assets/src/main.js"></script>
+</head>
+
+<body>
+  <!-- Hidden File Input -->
+  <input id="file-input" type="file" accept=".pcf" hidden>
+
+  <!-- Info Box (static) -->
+  <div id="infoBox" class="info-box" style="display:none;"></div>
+
+  <!-- Spinner Overlay -->
+  <div id="spinner-overlay" class="hidden">
+    <div id="spinner-box">
+      <div id="spinner"></div>
+      <div id="spinner-text">Loading…</div>
+    </div>
+  </div>
+
+  <!-- Drop Card / File Selector -->
+  <div class="drop-card">
+    <div class="drop-card-content">
+      <button id="select-file" class="btn">
+        <span class="icon">＋</span>
+        Select file
+      </button>
+      <div class="or-text-or">or</div>
+      <div class="or-text">
+        <a href="https://www.youtube.com/watch?v=GtUVQei3nX4" target="_blank" rel="noopener noreferrer"
+          class="invisible-link">
+          Drop it like it's hot🎵
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filename Overlay -->
+  <div id="filename-overlay" hidden>
+    <span id="filename-text"></span>
+    <button id="copy-filename" aria-label="Dateiname kopieren">📋</button>
+  </div>
+
+  <!-- App Container & Side Window -->
+  <div id="app"></div>
+  <div id="mySideWindow" class="sidewindow">
+    <div id="objProp"></div>
+  </div>
+
+  <!-- Initialization Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const card = document.querySelector('.drop-card');
+      const fileInput = document.getElementById('file-input');
+      const selectBtn = document.getElementById('select-file');
+      const overlay = document.getElementById('filename-overlay');
+      const sideWindow = document.getElementById('mySideWindow');
+      const filenameEl = document.getElementById('filename-text');
+      const copyBtn = document.getElementById('copy-filename');
+      const spinnerOverlay = document.getElementById('spinner-overlay');
+      const spinnerText = document.getElementById('spinner-text');
+
+      overlay.hidden = true;
+
+      // Query-parameter handling
+      const params = new URLSearchParams(window.location.search);
+      const fl = params.get('fl');
+      if (fl) {
+        filenameEl.textContent = fl;
+        overlay.hidden = false;
+        card.classList.add('hidden');
+
+        spinnerText.textContent = `Loading ${fl}…`;
+        spinnerOverlay.classList.remove('hidden');
+
+        window.dispatchEvent(new CustomEvent('pcf-url', { detail: fl }));
+      }
+
+      // File handling logic
+      function handleFile(file) {
+        sideWindow.innerHTML = '';
+
+        filenameEl.textContent = file.name;
+        overlay.hidden = false;
+        card.classList.add('hidden');
+
+        spinnerText.textContent = `Generate ${file.name} …`;
+        spinnerOverlay.classList.remove('hidden');
+
+        const blobUrl = URL.createObjectURL(file);
+        window.dispatchEvent(new CustomEvent('pcf-url', { detail: blobUrl }));
+      }
+
+      // Copy-to-clipboard with fallback
+      copyBtn.addEventListener('click', () => {
+        const text = filenameEl.textContent;
+        if (!text) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(showCheck).catch(() => fallbackCopy(text));
+        } else {
+          fallbackCopy(text);
+        }
+      });
+
+      function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showCheck(); }
+        catch (err) { console.error('Fallback Copy failed:', err); }
+        document.body.removeChild(ta);
+      }
+
+      function showCheck() {
+        const prev = copyBtn.textContent;
+        copyBtn.textContent = '✅';
+        setTimeout(() => copyBtn.textContent = prev, 800);
+      }
+
+      // Drag & Drop handlers
+      ['dragenter', 'dragover'].forEach(evt =>
+        document.body.addEventListener(evt, e => { e.preventDefault(); document.body.classList.add('drag-hover'); })
+      );
+      ['dragleave', 'drop'].forEach(evt =>
+        document.body.addEventListener(evt, e => { e.preventDefault(); document.body.classList.remove('drag-hover'); })
+      );
+      document.body.addEventListener('drop', e => {
+        e.preventDefault();
+        const f = e.dataTransfer.files[0];
+        if (f && /\.pcf$/i.test(f.name)) handleFile(f);
+      });
+
+      // UI Triggers
+      selectBtn.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', e => {
+        const f = e.target.files[0];
+        if (f && /\.pcf$/i.test(f.name)) handleFile(f);
+      });
+    });
+  </script>
+</body>
+
+</html>
