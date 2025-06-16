@@ -161,16 +161,26 @@ export class SceneBuilder {
     }
 
     _frameCamera(rootGroup) {
+        const MAX_REFRAME_ANGLE = Math.PI / 12; // 15°
+
         const box = new Box3().setFromObject(rootGroup);
         const center = box.getCenter(new Vector3());
         const size = box.getSize(new Vector3()).length();
         const offset = size;
 
         const currentTarget = this.controls.target.clone();
-        const dir = this.camera.position.clone().sub(currentTarget).normalize();
+        const currentDir = this.camera.position.clone().sub(currentTarget).normalize();
 
-        const newPos = center.clone().add(dir.multiplyScalar(offset));
+        const newDir = currentTarget.clone().sub(center).negate().normalize();
 
+        const dot = currentDir.dot(newDir);
+        const angle = Math.acos(Math.min(Math.max(dot, -1), 1));
+
+        if (angle < MAX_REFRAME_ANGLE) {
+            return;
+        }
+
+        const newPos = center.clone().add(currentDir.multiplyScalar(offset));
         this.camera.position.copy(newPos);
 
         this.controls.target.copy(center);
