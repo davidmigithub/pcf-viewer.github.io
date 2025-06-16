@@ -31,6 +31,15 @@ export class ComponentFactory {
         case 'FLANGE':
           mesh = createFlange(block, pipelineRef, this.units);
           break;
+        case 'CAP':
+          mesh = createCap(block, pipelineRef, this.units);
+          break;
+        case 'OLET':
+          mesh = createOlet(block, pipelineRef, this.units);
+          break;
+        case 'VALVE':
+          mesh = createValve(block, pipelineRef, this.units);
+          break;
 
       // TODO: add more cases
 
