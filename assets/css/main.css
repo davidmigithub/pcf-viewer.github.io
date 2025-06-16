@@ -161,22 +161,6 @@ body {
 }
 
 /* ==========================
-   Side Menu
-   ========================== */
-.sideMenu {
-  position: fixed;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 900;
-  background: rgba(0, 0, 0, 0);
-  color: #666;
-  font-size: 16px;
-  pointer-events: none;
-  text-align: left;
-}
-
-/* ==========================
    Info Box
    ========================== */
 #infoBox.info-box {
@@ -364,4 +348,13 @@ body {
   accent-color: #007bff;
   margin-right: 6px;
   vertical-align: middle;
+}
+
+#sideMenu .menu-content hr {
+  display: block;
+  width: 100%;
+  max-width: none;
+  border: none;
+  border-top: 1px solid #444;
+  margin: 8px 0;
 }
