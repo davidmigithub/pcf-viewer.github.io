@@ -89,24 +89,24 @@ export class UI {
 
         this.sideMenu.querySelectorAll('.delete-file-btn').forEach(btn => {
             btn.addEventListener('click', e => {
+                e.preventDefault();
                 e.stopPropagation();
+
                 const group = btn.closest('.file-group');
-                const fileName = group.dataset.file;
-                if (fileName && confirm(`Datei "${fileName}" wirklich entfernen?`)) {
-                    this.builder.removeFile(fileName);
+                const fileName = group?.dataset.file;
+                if (!fileName) return;
 
-                    const next = group.nextElementSibling;
-                    if (next && next.tagName === 'HR') {
-                        next.remove();
-                    } else {
-                        const prev = group.previousElementSibling;
-                        if (prev && prev.tagName === 'HR') {
-                            prev.remove();
-                        }
-                    }
+                this.builder.removeFile(fileName);
 
-                    group.remove();
+                const next = group.nextElementSibling;
+                if (next?.tagName === 'HR') {
+                    next.remove();
+                } else {
+                    const prev = group.previousElementSibling;
+                    if (prev?.tagName === 'HR') prev.remove();
                 }
+
+                group.remove();
             });
         });
     }
