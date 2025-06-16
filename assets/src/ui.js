@@ -2,7 +2,6 @@ export class UI {
     constructor() {
         this.infoBox = document.getElementById('infoBox');
         this.spinnerOverlay = document.getElementById('spinner-overlay');
-        this.filenameOverlay = document.getElementById('filename-overlay');
         this.sideMenu = document.getElementById('sideMenu');
         this.builder = null;
     }
@@ -107,13 +106,11 @@ export class UI {
 
     showSpinner() {
         this.spinnerOverlay.hidden = false;
-        this.filenameOverlay.hidden = true;
         this.sideMenu.hidden = true;
     }
 
     hideSpinner() {
         this.spinnerOverlay.hidden = true;
-        this.filenameOverlay.hidden = false;
         this.sideMenu.hidden = false;
     }
 }
