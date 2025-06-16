@@ -1,4 +1,4 @@
-This is a web-based 3D viewer for *.pcf files (Piping Component File).
+This is a web-based 3D viewer for *.pcf files (Piping Component File), built on Three.js.
 
     Load one or multiple PCF files via file picker or drag-and-drop
 
