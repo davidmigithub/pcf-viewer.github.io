@@ -19,39 +19,24 @@ export class UI {
                 ? file.parsed.pipelines.pipelines
                 : [];
 
-            if (pipelines.length === 1) {
-                // Einzelne Pipeline – einfache Darstellung
-                const pl = pipelines[0];
-                return `
-            <div class="file-group">
-                <label>
-                    <input type="checkbox"
-                        data-pipeline="${file.fileName}|${pl.reference}"
-                        checked>
-                    <strong>${file.fileName}</strong><br>${pl.reference}
-                </label>
-            </div>
-        `;
-            } else {
-                // Mehrere Pipelines – strukturierte Darstellung
-                const lines = pipelines.map(pl => `
-            <label class="pipeline-entry">
-                <input type="checkbox"
-                    data-pipeline="${file.fileName}|${pl.reference}"
-                    checked>
-                ${pl.reference}
-            </label>
-        `).join('');
+            const lines = pipelines.map(pl => `
+                <div class="pipeline-entry">
+                    <label>
+                        <input type="checkbox"
+                            data-pipeline="${file.fileName}|${pl.reference}"
+                            checked>
+                        ${pl.reference}
+                    </label>
+                </div>
+            `).join('');
 
-                return `
-            <div class="file-group">
-                <div class="file-name"><strong>${file.fileName}</strong></div>
-                ${lines}
-            </div>
-        `;
-            }
+            return `
+                <div class="file-group">
+                    <div class="file-name"><strong>${file.fileName}</strong></div>
+                    ${lines}
+                </div>
+            `;
         }).join('<hr>');
-
 
         const types = new Set();
         filesData.forEach(file => {
