@@ -93,7 +93,7 @@ export class SceneBuilder {
     }
 
     addFile(parsed, fileName) {
-        this.removeFile(fileName, false);
+        this.removeFile(fileName, true);
 
         this.filesData.push({ parsed, fileName });
         this.ui.buildSideMenu(this.filesData);
