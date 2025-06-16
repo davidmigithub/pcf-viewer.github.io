@@ -47,9 +47,9 @@ export class ComponentFactory {
             case 'VALVE':
                 mesh = createValve(block, pipelineRef, this.units, this.pipelines);
                 break;
-            case 'WELD':
-                mesh = createWeld(block, pipelineRef, this.units, this.pipelines);
-                break;
+            // case 'WELD':
+                // mesh = createWeld(block, pipelineRef, this.units, this.pipelines);
+                // break;
             default:
                 console.warn('ComponentFactory: Unsupported component type', block.type);
                 return createPlaceholder(block, pipelineRef, this.units);
