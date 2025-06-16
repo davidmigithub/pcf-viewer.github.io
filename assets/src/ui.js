@@ -20,52 +20,50 @@ export class UI {
                 : [];
 
             const lines = pipelines.map(pl => `
-                <label class="pipeline-entry">
-                    <input type="checkbox"
-                        data-pipeline="${file.fileName}|${pl.reference}"
-                        checked>
-                    ${pl.reference}
-                </label>
+            <label class="pipeline-entry">
+                <input type="checkbox"
+                    data-pipeline="${file.fileName}|${pl.reference}"
+                    checked>
+                ${pl.reference}
+            </label>
             `).join('');
 
             return `
-                <div class="file-group" data-file="${file.fileName}">
-                    <div class="file-name toggle-header">
-                        <span class="toggle-arrow">▽</span>
-                        <strong>${file.fileName}</strong>
-                        <button class="delete-file-btn" title="Datei entfernen">🗑️</button>
-                    </div>
-                    <div class="pipeline-list">${lines}</div>
+            <div class="file-group" data-file="${file.fileName}">
+                <div class="file-name toggle-header">
+                <span class="toggle-arrow">▽</span>
+                <strong>${file.fileName}</strong>
+                <button class="delete-file-btn" title="Datei entfernen">🗑️</button>
                 </div>
+                <div class="pipeline-list">${lines}</div>
+            </div>
             `;
-
         }).join('<hr>');
 
         const types = new Set();
-        filesData.forEach(file => {
-            (file.parsed.pipelines?.pipelines || []).forEach(pl => {
+        filesData.forEach(file =>
+            (file.parsed.pipelines?.pipelines || []).forEach(pl =>
                 (pl.components || []).forEach(block => {
                     if (block.type) types.add(block.type);
-                });
-            });
-        });
-
+                })
+            )
+        );
         const typeHtml = Array.from(types).map(t => `
             <label>
-                <input type="checkbox"
+            <input type="checkbox"
                     data-type="${t}"
                     checked>
-                ${t}
+            ${t}
             </label>
         `).join('<br>');
 
         this.sideMenu.innerHTML = `
             <div class="menu-content">
-                <h3>Files & Pipelines</h3>
-                ${plcHtml}
-                <hr>
-                <h3>Categories</h3>
-                ${typeHtml}
+            <h3>Files & Pipelines</h3>
+            ${plcHtml}
+            <hr>
+            <h3>Categories</h3>
+            ${typeHtml}
             </div>
         `;
 
@@ -82,8 +80,7 @@ export class UI {
 
         this.sideMenu.querySelectorAll('.toggle-header').forEach(header => {
             header.addEventListener('click', () => {
-                const group = header.closest('.file-group');
-                group.classList.toggle('collapsed');
+                header.closest('.file-group').classList.toggle('collapsed');
             });
         });
 
@@ -91,11 +88,10 @@ export class UI {
             btn.addEventListener('click', e => {
                 e.preventDefault();
                 e.stopPropagation();
-
                 const fileName = btn.closest('.file-group')?.dataset.file;
-                if (!fileName) return;
-
-                this.builder.removeFile(fileName);
+                if (fileName) {
+                    this.builder.removeFile(fileName);
+                }
             });
         });
     }
