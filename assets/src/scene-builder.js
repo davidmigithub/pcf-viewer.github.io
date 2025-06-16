@@ -172,6 +172,14 @@ export class SceneBuilder {
     this.raycaster.setFromCamera(this.pointer, this.camera);
     const hits = this.raycaster.intersectObjects(this.scene.children, true);
 
+    // only visible objects
+    const visibleMeshes = [];
+    this.scene.traverse(obj => {
+        if (obj.isMesh && obj.visible) {
+            visibleMeshes.push(obj);
+        }
+    });
+
     if (hits.length > 0) {
       const picked = hits[0].object;
       if (this.INTERSECTED !== picked) {
