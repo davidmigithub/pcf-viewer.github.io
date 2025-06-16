@@ -1,5 +1,7 @@
 import { Mesh, CylinderGeometry, SphereGeometry, Vector3, Quaternion } from "../vendor_mods/three.module.js";
-import { PLACEHOLDER_MATERIAL, GEOMETRY_SEGMENTS } from "../settings.js";
+import {
+	PLACEHOLDER_MATERIAL,
+	GEOMETRY_SEGMENTS } from "../settings.js";
 
 /**
  * Erzeugt ein generisches Platzhalter-Mesh für nicht unterstützte Komponenten.
