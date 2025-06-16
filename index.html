@@ -25,7 +25,7 @@
     onload="this.media='all';this.onload=null;document.documentElement.classList.remove('no-flash');">
   <link rel="icon" href="assets/img/favicon.ico">
 
-  <title>pcf viewer</title>
+  <title>PCF Viewer</title>
 
   <!-- Main Script -->
   <script type="module" src="assets/src/main.js"></script>
@@ -51,7 +51,7 @@
     <div class="drop-card-content">
       <button id="select-file" class="btn">
         <span class="icon">＋</span>
-        Select file
+        Select file(s)
       </button>
       <div class="or-text-or">or</div>
       <div class="or-text">
@@ -61,12 +61,6 @@
         </a>
       </div>
     </div>
-  </div>
-
-  <!-- Filename Overlay -->
-  <div id="filename-overlay" hidden>
-    <span id="filename-text"></span>
-    <button id="copy-filename" aria-label="Dateiname kopieren">📋</button>
   </div>
 
   <!-- App Container & Side Menu -->
@@ -79,35 +73,13 @@
       const card = document.querySelector('.drop-card');
       const fileInput = document.getElementById('file-input');
       const selectBtn = document.getElementById('select-file');
-      const overlay = document.getElementById('filename-overlay');
       const sideMenu = document.getElementById('sideMenu');
-      const filenameEl = document.getElementById('filename-text');
-      const copyBtn = document.getElementById('copy-filename');
       const spinnerOverlay = document.getElementById('spinner-overlay');
       const spinnerText = document.getElementById('spinner-text');
-
-      overlay.hidden = true;
-
-      // Query-parameter handling
-      const params = new URLSearchParams(window.location.search);
-      const fl = params.get('fl');
-      if (fl) {
-        filenameEl.textContent = fl;
-        overlay.hidden = false;
-        card.classList.add('hidden');
-
-        spinnerText.textContent = `Loading ${fl}…`;
-        spinnerOverlay.hidden = false;
-
-        window.dispatchEvent(new CustomEvent('pcf-url', { detail: fl }));
-      }
 
       // File handling logic
       function handleFile(file) {
         sideMenu.innerHTML = '';
-
-        filenameEl.textContent = file.name;
-        overlay.hidden = false;
         card.classList.add('hidden');
 
         spinnerText.textContent = `Generate ${file.name}…`;
@@ -122,35 +94,6 @@
         }));
       }
 
-      // Copy-to-clipboard with fallback
-      copyBtn.addEventListener('click', () => {
-        const text = filenameEl.textContent;
-        if (!text) return;
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(showCheck).catch(() => fallbackCopy(text));
-        } else {
-          fallbackCopy(text);
-        }
-      });
-
-      function fallbackCopy(text) {
-        const ta = document.createElement('textarea');
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        try { document.execCommand('copy'); showCheck(); }
-        catch (err) { console.error('Fallback Copy failed:', err); }
-        document.body.removeChild(ta);
-      }
-
-      function showCheck() {
-        const prev = copyBtn.textContent;
-        copyBtn.textContent = '✅';
-        setTimeout(() => copyBtn.textContent = prev, 800);
-      }
-
       // Drag & Drop handlers
       ['dragenter', 'dragover'].forEach(evt =>
         document.body.addEventListener(evt, e => { e.preventDefault(); document.body.classList.add('drag-hover'); })
@@ -158,7 +101,7 @@
       ['dragleave', 'drop'].forEach(evt =>
         document.body.addEventListener(evt, e => { e.preventDefault(); document.body.classList.remove('drag-hover'); })
       );
-      + document.body.addEventListener('drop', e => {
+      document.body.addEventListener('drop', e => {
         e.preventDefault();
         Array.from(e.dataTransfer.files)
           .filter(f => /\.pcf$/i.test(f.name))
