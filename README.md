@@ -11,3 +11,5 @@ All rendering and interaction happen entirely in the browser—no server-side pr
 The project is still under active development—more features coming soon.
 
 Try it out here: https://finseifert.github.io/pcf-viewer.github.io/
+
+PCF Documentation: https://docs.hexagonppm.com/r/en-US/PCF-Reference-Guide/Version-15/295309
