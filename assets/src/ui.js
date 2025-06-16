@@ -31,7 +31,7 @@ export class UI {
             return `
                 <div class="file-group">
                     <div class="file-name toggle-header">
-                        <span class="toggle-arrow">▼</span> <strong>${file.fileName}</strong>
+                        <span class="toggle-arrow">﹀</span> <strong>${file.fileName}</strong>
                     </div>
                     <div class="pipeline-list">${lines}</div>
                 </div>
