@@ -142,22 +142,23 @@ export class SceneBuilder {
         });
     }
 
-    removeFile(fileName, rebuildMenu = true) {
+    removeFile(fileName) {
         const group = this.rootGroup.getObjectByName(fileName);
         if (group) {
             this.rootGroup.remove(group);
             group.traverse(obj => {
                 if (obj.geometry) obj.geometry.dispose();
                 if (obj.material) {
-                    if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
-                    else obj.material.dispose();
+                    Array.isArray(obj.material)
+                        ? obj.material.forEach(m => m.dispose())
+                        : obj.material.dispose();
                 }
             });
         }
         const idx = this.filesData.findIndex(f => f.fileName === fileName);
         if (idx !== -1) this.filesData.splice(idx, 1);
 
-        if (rebuildMenu) this.ui.buildSideMenu(this.filesData);
+        this.ui.buildSideMenu(this.filesData);
 
         if (this.rootGroup.children.length === 0) {
             this.controls.target.set(0, 0, 0);
