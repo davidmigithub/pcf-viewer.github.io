@@ -92,21 +92,10 @@ export class UI {
                 e.preventDefault();
                 e.stopPropagation();
 
-                const group = btn.closest('.file-group');
-                const fileName = group?.dataset.file;
+                const fileName = btn.closest('.file-group')?.dataset.file;
                 if (!fileName) return;
 
                 this.builder.removeFile(fileName);
-
-                const next = group.nextElementSibling;
-                if (next?.tagName === 'HR') {
-                    next.remove();
-                } else {
-                    const prev = group.previousElementSibling;
-                    if (prev?.tagName === 'HR') prev.remove();
-                }
-
-                group.remove();
             });
         });
     }

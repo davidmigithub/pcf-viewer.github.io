@@ -85,6 +85,9 @@ export class SceneBuilder {
         this.filesData = [];
 
         this.ui = new UI();
+        this.ui.setBuilder(this);
+        this.ui.buildSideMenu(this.filesData);
+
         this._setupResizeListener();
         this._animate();
     }
