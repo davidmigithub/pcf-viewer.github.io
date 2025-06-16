@@ -22,6 +22,7 @@ export const TEE_MATERIAL =                     new MeshStandardMaterial({ color
 export const VALVE_MATERIAL =                   new MeshStandardMaterial({ color: 0xebbd34, transparent: true, opacity: 1.0 });
 export const VALVEANGLE_MATERIAL =              new MeshStandardMaterial({ color: 0xffff00, transparent: true, opacity: 1.0 });
 export const PLACEHOLDER_MATERIAL =             new MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
+export const WELD_MATERIAL =                    new MeshStandardMaterial({ color: 0xff0000, transparent: true, opacity: 1.0 });
 
 // SCENE COLORS
 export const SCENEBACKGROUND =                  new Color(0x151515);
