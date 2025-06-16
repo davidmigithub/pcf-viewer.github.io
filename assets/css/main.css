@@ -229,6 +229,7 @@ body {
   cursor: pointer;
   display: flex;
   align-items: flex-start;
+  text-align: left;
 }
 
 /* Pfeil-Icon */
@@ -280,9 +281,9 @@ body {
 }
 
 #sideMenu .menu-content h3 {
-  color: #ddd;
-  margin: 12px 0 6px;
-  font-size: 14px;
+  color: #eee;
+  margin: 12px 0 16px;
+  font-size: 16px;
   font-weight: 600;
 }
 
@@ -300,7 +301,7 @@ body {
 
 #sideMenu .menu-content input[type="checkbox"] {
   accent-color: #007bff;
-  margin-right: 6px;
+  margin-right: 7px;
   vertical-align: middle;
 }
 
@@ -314,7 +315,7 @@ body {
 }
 
 .file-group {
-  margin-bottom: 12px;
+  margin-bottom: 0px;
 }
 
 .file-name {
