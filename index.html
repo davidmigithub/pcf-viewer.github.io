@@ -14,7 +14,10 @@
     html.no-flash {
       background-color: #151515;
     }
-    [hidden] { display: none !important; }
+
+    [hidden] {
+      display: none !important;
+    }
   </style>
 
   <!-- Main Styles & Favicon -->
@@ -29,8 +32,8 @@
 </head>
 
 <body>
-  <!-- Hidden File Input -->
-  <input id="file-input" type="file" accept=".pcf" hidden>
+  <!-- Hidden File Input (multiple files allowed) -->
+  <input id="file-input" type="file" accept=".pcf" hidden multiple>
 
   <!-- Info Box (static) -->
   <div id="infoBox" class="info-box" style="display:none;"></div>
@@ -155,17 +158,19 @@
       ['dragleave', 'drop'].forEach(evt =>
         document.body.addEventListener(evt, e => { e.preventDefault(); document.body.classList.remove('drag-hover'); })
       );
-      document.body.addEventListener('drop', e => {
+      + document.body.addEventListener('drop', e => {
         e.preventDefault();
-        const f = e.dataTransfer.files[0];
-        if (f && /\.pcf$/i.test(f.name)) handleFile(f);
+        Array.from(e.dataTransfer.files)
+          .filter(f => /\.pcf$/i.test(f.name))
+          .forEach(f => handleFile(f));
       });
 
       // UI Triggers
       selectBtn.addEventListener('click', () => fileInput.click());
       fileInput.addEventListener('change', e => {
-        const f = e.target.files[0];
-        if (f && /\.pcf$/i.test(f.name)) handleFile(f);
+        Array.from(e.target.files)
+          .filter(f => /\.pcf$/i.test(f.name))
+          .forEach(f => handleFile(f));
       });
     });
   </script>
