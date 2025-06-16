@@ -166,11 +166,12 @@ export class SceneBuilder {
         const size = box.getSize(new Vector3()).length();
         const offset = size;
 
-        this.camera.position.set(
-            center.x + offset,
-            center.y + offset,
-            center.z + offset
-        );
+        const currentTarget = this.controls.target.clone();
+        const dir = this.camera.position.clone().sub(currentTarget).normalize();
+
+        const newPos = center.clone().add(dir.multiplyScalar(offset));
+
+        this.camera.position.copy(newPos);
 
         this.controls.target.copy(center);
         this.controls.update();
