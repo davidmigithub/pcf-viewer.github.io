@@ -329,3 +329,18 @@ body {
   padding: 0;
   border-left: 2px solid transparent;
 }
+
+.toggle-header {
+  cursor: pointer;
+  user-select: none;
+  padding: 2px 0;
+}
+
+.pipeline-list {
+  margin-top: 4px;
+}
+
+/* eingeklappt */
+.file-group.collapsed .pipeline-list {
+  display: none;
+}

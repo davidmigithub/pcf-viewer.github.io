@@ -20,22 +20,20 @@ export class UI {
                 : [];
 
             const lines = pipelines.map(pl => `
-                <div class="pipeline-entry">
-                    <label>
-                        <input type="checkbox"
-                            data-pipeline="${file.fileName}|${pl.reference}"
-                            checked>
-                        ${pl.reference}
-                    </label>
-                </div>
-            `).join('');
+        <label class="pipeline-entry">
+            <input type="checkbox"
+                data-pipeline="${file.fileName}|${pl.reference}"
+                checked>
+            ${pl.reference}
+        </label>
+    `).join('');
 
             return `
-                <div class="file-group">
-                    <div class="file-name"><strong>${file.fileName}</strong></div>
-                    ${lines}
-                </div>
-            `;
+        <div class="file-group">
+            <div class="file-name toggle-header"><strong>${file.fileName}</strong></div>
+            <div class="pipeline-list">${lines}</div>
+        </div>
+    `;
         }).join('<hr>');
 
         const types = new Set();
@@ -74,6 +72,13 @@ export class UI {
                 } else if (chk.dataset.type) {
                     this.builder.toggleType(chk.dataset.type, chk.checked);
                 }
+            });
+        });
+
+        this.sideMenu.querySelectorAll('.toggle-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const group = header.closest('.file-group');
+                group.classList.toggle('collapsed');
             });
         });
     }
