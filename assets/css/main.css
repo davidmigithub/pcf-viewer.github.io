@@ -19,7 +19,7 @@ body {
   top: 7px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1000;
+  z-index: 900;
   background: rgba(0, 0, 0, 0.9);
   color: #fff;
   padding: 10px 30px;
@@ -168,7 +168,7 @@ body {
   left: 20px;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 999;
+  z-index: 900;
   background: rgba(0, 0, 0, 0);
   color: #666;
   font-size: 16px;
@@ -188,7 +188,7 @@ body {
   border-radius: 10px;
   font-size: 12px;
   pointer-events: none;
-  z-index: 1000;
+  z-index: 998;
   white-space: pre;
   text-align: left;
   overflow: auto;
