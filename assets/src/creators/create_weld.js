@@ -16,30 +16,32 @@ import { getExternalKeypointDirection } from "../factory.js";
  * pipeline components, excluding the current block.
  * @param {Object} block       raw component block with geometry data
  * @param {string} pipelineRef pipeline reference for userData
+ * @param {Object} units       units object { boreScale, coordScale }
+ * @param {Array}  pipelines   full array of all pipelines
  * @returns {Group|null}
  */
-function createWeld(block, pipelineRef, pipelines) {
+function createWeld(block, pipelineRef, units, pipelines) {
     const ends = block.geometry['END-POINT'];
     if (!ends || ends.length < 2) {
         console.warn('createWeld: need two END-POINTs', block);
         return null;
     }
 
-    // compute endpoints and center (uses same units as pipe components)
+    // compute endpoints and center (coords already scaled by parser with coordScale)
     const p0 = new Vector3(...ends[0].coords);
     const p1 = new Vector3(...ends[1].coords);
     const center = new Vector3().addVectors(p0, p1).multiplyScalar(0.5);
 
-    // pipe radius from nominal diameter
+    // pipe radius from nominal diameter, applied boreScale
     const rawDia = parseFloat(ends[0].nominal);
     if (isNaN(rawDia)) {
         console.warn('createWeld: invalid diameter', ends[0].nominal);
         return null;
     }
-    const radius = rawDia / 2;
+    // scale the diameter into scene units
+    const radius = rawDia / 2 * units.boreScale;
 
     // determine axis direction via factory helper
-    // passes block to exclude itself and pipelineRef to limit search
     const pipeDir = getExternalKeypointDirection(block, pipelineRef, pipelines);
     const alignQuat = new Quaternion().setFromUnitVectors(
         new Vector3(0, 1, 0),
