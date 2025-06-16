@@ -12,81 +12,64 @@ export class UI {
         console.log('[UI] Builder set:', builder);
     }
 
-    buildSideMenu(parsed) {
-        console.groupCollapsed('[UI] buildSideMenu called');
-        console.log('[UI] this.builder:', this.builder);
-        console.log('[UI] parsed:', parsed);
+    buildSideMenu(filesData) {
+        if (!this.builder) return;
 
-        if (!this.builder) {
-            console.warn('[UI] No builder available, aborting side menu build');
-            console.groupEnd();
-            return;
-        }
-
-        // pipelines ist ein Objekt mit dem Array pipelines.pipelines
-        const pipelines = (parsed.pipelines && Array.isArray(parsed.pipelines.pipelines))
-            ? parsed.pipelines.pipelines
+        // Pipeline checkboxes grouped by file
+        const plcHtml = filesData.map(file => {
+        const pipelines = Array.isArray(file.parsed.pipelines?.pipelines)
+            ? file.parsed.pipelines.pipelines
             : [];
-        console.log('[UI] Found pipelines count:', pipelines.length);
+        const lines = pipelines.map(pl => `
+            <label>
+            <input type="checkbox"
+                    data-pipeline="${file.fileName}|${pl.reference}"
+                    checked>
+            ${pl.reference}
+            </label>
+        `).join('<br>');
+        return `<div class="file-group"><strong>${file.fileName}</strong><br>${lines}</div>`;
+        }).join('<hr>');
 
-        // alle component-Typen sammeln
+        // Category checkboxes (types)
         const types = new Set();
-        pipelines.forEach(pl => {
+        filesData.forEach(file => {
+        (file.parsed.pipelines?.pipelines || []).forEach(pl => {
             (pl.components || []).forEach(block => {
-                if (block.type) types.add(block.type);
+            if (block.type) types.add(block.type);
             });
         });
-        console.log('[UI] Found types:', Array.from(types));
-
-        // HTML für Pipelines
-        const plcHtml = pipelines.map(pl => `
-      <label>
-        <input type="checkbox"
-               data-pipeline="${pl.reference}"
-               checked>
-        ${pl.reference}
-      </label>
-    `).join('<br>');
-        console.log('[UI] Pipeline HTML:', plcHtml);
-
-        // HTML für Typ-Filter
+        });
         const typeHtml = Array.from(types).map(t => `
-      <label>
-        <input type="checkbox"
-               data-type="${t}"
-               checked>
-        ${t}
-      </label>
-    `).join('<br>');
-        console.log('[UI] Type HTML:', typeHtml);
+        <label>
+            <input type="checkbox"
+                data-type="${t}"
+                checked>
+            ${t}
+        </label>
+        `).join('<br>');
 
-        // in den Side-Menu-Container schreiben
         this.sideMenu.innerHTML = `
-      <div class="menu-content">
-        <h3>Pipelines</h3>
-        ${plcHtml}
-        <hr>
-        <h3>Categories</h3>
-        ${typeHtml}
-      </div>
-    `;
-        console.log('[UI] sideMenu innerHTML set');
+        <div class="menu-content">
+            <h3>Files & Pipelines</h3>
+            ${plcHtml}
+            <hr>
+            <h3>Categories</h3>
+            ${typeHtml}
+        </div>
+        `;
 
-        // Events verknüpfen
-        const checkboxes = this.sideMenu.querySelectorAll('input[type=checkbox]');
-        console.log('[UI] Number of checkboxes found:', checkboxes.length);
-        checkboxes.forEach(cb => {
-            cb.addEventListener('change', e => {
-                const chk = e.target;
-                console.log(`[UI] checkbox changed: ${chk.dataset.pipeline || chk.dataset.type} = ${chk.checked}`);
-                if (chk.dataset.pipeline) {
-                    this.builder.togglePipeline(chk.dataset.pipeline, chk.checked);
-                } else if (chk.dataset.type) {
-                    this.builder.toggleType(chk.dataset.type, chk.checked);
-                }
-            });
+        // Event listeners
+        this.sideMenu.querySelectorAll('input[type=checkbox]').forEach(cb => {
+        cb.addEventListener('change', e => {
+            const chk = e.target;
+            if (chk.dataset.pipeline) {
+            this.builder.togglePipeline(chk.dataset.pipeline, chk.checked);
+            } else if (chk.dataset.type) {
+            this.builder.toggleType(chk.dataset.type, chk.checked);
+            }
         });
-        console.groupEnd();
+        });
     }
 
     showInfo(block, x, y) {

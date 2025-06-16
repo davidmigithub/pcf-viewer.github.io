@@ -28,7 +28,7 @@ import {
 } from './settings.js';
 
 export class SceneBuilder {
-  constructor(parsed) {
+  constructor() {
     Object3D.DEFAULT_UP = new Vector3(0, 0, 1);
     this.renderer = new WebGLRenderer({ antialias: true });
     this.renderer.physicallyCorrectLights = true;
@@ -63,17 +63,14 @@ export class SceneBuilder {
     this.INTERSECTED = null;
 
     this.controlsMoved = false;
-    this.controls.addEventListener('start', () => {
-      this.controlsMoved = false;
-    });
+    this.controls.addEventListener('start', () => { this.controlsMoved = false; });
     this.controls.addEventListener('change', () => {
       this.controlsMoved = true;
       this._clearSelection();
       this.ui.hideInfo();
     });
 
-    const canvas = this.renderer.domElement;
-    canvas.addEventListener('mouseup', evt => {
+    this.renderer.domElement.addEventListener('mouseup', evt => {
       if (!this.controlsMoved) {
         this.pointer.x = (evt.clientX / window.innerWidth) * 2 - 1;
         this.pointer.y = - (evt.clientY / window.innerHeight) * 2 + 1;
@@ -81,61 +78,64 @@ export class SceneBuilder {
       }
     });
 
-    this.parsed = parsed;
-    this.factory = new ComponentFactory(parsed.units, parsed.materials);
+    // Root group for all loaded files
+    this.rootGroup = new Group();
+    this.rootGroup.name = "PipingSystem";
+    this.scene.add(this.rootGroup);
 
     this.ui = new UI();
     this._setupResizeListener();
     this._animate();
   }
 
-  update(parsed) {
-    this.parsed = parsed;
-    this.factory = new ComponentFactory(parsed.units, parsed.materials);
-  }
-
-  build() {
-    const pipelines = (this.parsed && this.parsed.pipelines && Array.isArray(this.parsed.pipelines.pipelines))
-      ? this.parsed.pipelines.pipelines
+  /**
+   * Adds a new parsed file into the scene under its filename group
+   */
+  addFile(parsed, fileName) {
+    const pipelines = Array.isArray(parsed.pipelines?.pipelines)
+      ? parsed.pipelines.pipelines
       : [];
+    const factory = new ComponentFactory(parsed.units, parsed.materials);
 
-    const root = new Group();
-    root.name = "PipingSystem";
+    const fileGroup = new Group();
+    fileGroup.name = fileName;
 
     pipelines.forEach(plc => {
+      const uniqueName = `${fileName}|${plc.reference}`;
       const plGroup = new Group();
-      plGroup.name = plc.reference;
+      plGroup.name = uniqueName;
 
       plc.components.forEach(block => {
-        const mesh = this.factory.build({ block }, plc.reference);
+        const mesh = factory.build({ block }, plc.reference);
         if (mesh) {
           mesh.userData.type = block.type;
           mesh.userData.pipelineRef = plc.reference;
+          mesh.userData.fileName = fileName;
           plGroup.add(mesh);
         }
       });
 
-      root.add(plGroup);
+      fileGroup.add(plGroup);
     });
 
-    this._frameCamera(root);
-    return root;
+    this.rootGroup.add(fileGroup);
+    this._frameCamera(this.rootGroup);
   }
 
-  togglePipeline(pipelineRef, visible) {
-    const group = this.scene.getObjectByName(pipelineRef);
+  togglePipeline(uniqueName, visible) {
+    const group = this.scene.getObjectByName(uniqueName);
     if (group) {
-        group.visible = visible;
+      group.visible = visible;
     } else {
-        console.warn(`Pipeline group '${pipelineRef}' not found`);
+      console.warn(`Pipeline group '${uniqueName}' not found`);
     }
   }
 
   toggleType(type, visible) {
     this.scene.traverse(obj => {
-        if (obj.isMesh && obj.userData.type === type) {
-            obj.visible = visible;
-        }
+      if (obj.isMesh && obj.userData.type === type) {
+        obj.visible = visible;
+      }
     });
   }
 
@@ -143,8 +143,8 @@ export class SceneBuilder {
     const box = new Box3().setFromObject(rootGroup);
     const center = box.getCenter(new Vector3());
     const size = box.getSize(new Vector3()).length();
+    const offset = size;
 
-    const offset = size * 1;
     this.camera.position.set(
       center.x + offset,
       center.y + offset,
@@ -163,51 +163,33 @@ export class SceneBuilder {
       mat.emissiveIntensity = this.currentEmissiveIntensity;
       mat.opacity = this.currentOpacity;
       mat.transparent = this.currentTransparent;
-
       this.INTERSECTED = null;
     }
   }
 
   _handlePick(clientX, clientY) {
     this.raycaster.setFromCamera(this.pointer, this.camera);
-
-    // only visible objects
     const visibleMeshes = [];
     this.scene.traverse(obj => {
-        if (obj.isMesh && obj.visible) {
-            visibleMeshes.push(obj);
-        }
+      if (obj.isMesh && obj.visible) visibleMeshes.push(obj);
     });
-
     const hits = this.raycaster.intersectObjects(visibleMeshes, true);
-
     if (hits.length > 0) {
       const picked = hits[0].object;
       if (this.INTERSECTED !== picked) {
-        if (this.INTERSECTED) {
-          const oldMat = this.INTERSECTED.material;
-          oldMat.color.copy(this.currentColor);
-          oldMat.emissive.copy(this.currentEmissive);
-          oldMat.emissiveIntensity = this.currentEmissiveIntensity;
-          oldMat.opacity = this.currentOpacity;
-          oldMat.transparent = this.currentTransparent;
-        }
-
+        if (this.INTERSECTED) this._clearSelection();
         this.INTERSECTED = picked;
         const mat = picked.material;
-
         this.currentColor = mat.color.clone();
         this.currentEmissive = mat.emissive.clone();
         this.currentEmissiveIntensity = mat.emissiveIntensity;
         this.currentOpacity = mat.opacity;
         this.currentTransparent = mat.transparent;
-
         mat.color.copy(HIGHLIGHT_COLOR);
         mat.emissive.copy(HIGHLIGHT_EMISSIVE);
         mat.emissiveIntensity = HIGHLIGHT_EMISSIVE_INTENSITY;
         mat.opacity = HIGHLIGHT_OPACITY;
         mat.transparent = true;
-
         this._showInfo(picked.userData.rawBlock, clientX, clientY);
       }
     } else {

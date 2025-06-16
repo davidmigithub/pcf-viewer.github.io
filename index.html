@@ -107,11 +107,16 @@
         overlay.hidden = false;
         card.classList.add('hidden');
 
-        spinnerText.textContent = `Generate ${file.name} …`;
+        spinnerText.textContent = `Generate ${file.name}…`;
         spinnerOverlay.hidden = false;
 
         const blobUrl = URL.createObjectURL(file);
-        window.dispatchEvent(new CustomEvent('pcf-url', { detail: blobUrl }));
+        window.dispatchEvent(new CustomEvent('pcf-url', {
+          detail: {
+            url: blobUrl,
+            name: file.name
+          }
+        }));
       }
 
       // Copy-to-clipboard with fallback
