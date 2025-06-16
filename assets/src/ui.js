@@ -14,60 +14,67 @@ export class UI {
     buildSideMenu(filesData) {
         if (!this.builder) return;
 
-        // Pipeline checkboxes grouped by file
         const plcHtml = filesData.map(file => {
-        const pipelines = Array.isArray(file.parsed.pipelines?.pipelines)
-            ? file.parsed.pipelines.pipelines
-            : [];
-        const lines = pipelines.map(pl => `
-            <label>
-            <input type="checkbox"
-                    data-pipeline="${file.fileName}|${pl.reference}"
-                    checked>
-            ${pl.reference}
-            </label>
-        `).join('<br>');
-        return `<div class="file-group"><strong>${file.fileName}</strong><br>${lines}</div>`;
+            const pipelines = Array.isArray(file.parsed.pipelines?.pipelines)
+                ? file.parsed.pipelines.pipelines
+                : [];
+
+            const lines = pipelines.map(pl => `
+                <div class="pipeline-entry">
+                    <label>
+                        <input type="checkbox"
+                            data-pipeline="${file.fileName}|${pl.reference}"
+                            checked>
+                        ${pl.reference}
+                    </label>
+                </div>
+            `).join('');
+
+            return `
+                <div class="file-group">
+                    <div class="file-name"><strong>${file.fileName}</strong></div>
+                    ${lines}
+                </div>
+            `;
         }).join('<hr>');
 
-        // Category checkboxes (types)
         const types = new Set();
         filesData.forEach(file => {
-        (file.parsed.pipelines?.pipelines || []).forEach(pl => {
-            (pl.components || []).forEach(block => {
-            if (block.type) types.add(block.type);
+            (file.parsed.pipelines?.pipelines || []).forEach(pl => {
+                (pl.components || []).forEach(block => {
+                    if (block.type) types.add(block.type);
+                });
             });
         });
-        });
+
         const typeHtml = Array.from(types).map(t => `
-        <label>
-            <input type="checkbox"
-                data-type="${t}"
-                checked>
-            ${t}
-        </label>
+            <label>
+                <input type="checkbox"
+                    data-type="${t}"
+                    checked>
+                ${t}
+            </label>
         `).join('<br>');
 
         this.sideMenu.innerHTML = `
-        <div class="menu-content">
-            <h3>Files & Pipelines</h3>
-            ${plcHtml}
-            <hr>
-            <h3>Categories</h3>
-            ${typeHtml}
-        </div>
+            <div class="menu-content">
+                <h3>Files & Pipelines</h3>
+                ${plcHtml}
+                <hr>
+                <h3>Categories</h3>
+                ${typeHtml}
+            </div>
         `;
 
-        // Event listeners
         this.sideMenu.querySelectorAll('input[type=checkbox]').forEach(cb => {
-        cb.addEventListener('change', e => {
-            const chk = e.target;
-            if (chk.dataset.pipeline) {
-            this.builder.togglePipeline(chk.dataset.pipeline, chk.checked);
-            } else if (chk.dataset.type) {
-            this.builder.toggleType(chk.dataset.type, chk.checked);
-            }
-        });
+            cb.addEventListener('change', e => {
+                const chk = e.target;
+                if (chk.dataset.pipeline) {
+                    this.builder.togglePipeline(chk.dataset.pipeline, chk.checked);
+                } else if (chk.dataset.type) {
+                    this.builder.toggleType(chk.dataset.type, chk.checked);
+                }
+            });
         });
     }
 

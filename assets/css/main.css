@@ -312,3 +312,18 @@ body {
   border-top: 1px solid #444;
   margin: 8px 0;
 }
+
+.file-group {
+  margin-bottom: 12px;
+}
+
+.file-name {
+  margin-bottom: 4px;
+  color: #ccc;
+}
+
+.pipeline-entry {
+  padding-left: 12px;
+  border-left: 2px solid #333;
+  margin-left: 2px;
+}
