@@ -1,7 +1,7 @@
 import { MeshStandardMaterial, Color } from './vendor_mods/three.module.js';
 
 // COMPONENT ACCURACY
-export const GEOMETRY_SEGMENTS = 256;
+export const GEOMETRY_SEGMENTS = 32;
 
 // COMPONENT COLOR
 export const BEND_MATERIAL =                    new MeshStandardMaterial({ color: 0x6ba836, transparent: true, opacity: 1.0 });
