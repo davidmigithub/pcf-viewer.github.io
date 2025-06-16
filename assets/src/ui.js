@@ -20,20 +20,23 @@ export class UI {
                 : [];
 
             const lines = pipelines.map(pl => `
-        <label class="pipeline-entry">
-            <input type="checkbox"
-                data-pipeline="${file.fileName}|${pl.reference}"
-                checked>
-            ${pl.reference}
-        </label>
-    `).join('');
+                <label class="pipeline-entry">
+                    <input type="checkbox"
+                        data-pipeline="${file.fileName}|${pl.reference}"
+                        checked>
+                    ${pl.reference}
+                </label>
+            `).join('');
 
             return `
-        <div class="file-group">
-            <div class="file-name toggle-header"><strong>${file.fileName}</strong></div>
-            <div class="pipeline-list">${lines}</div>
-        </div>
-    `;
+                <div class="file-group">
+                    <div class="file-name toggle-header">
+                        <span class="toggle-arrow">▼</span> <strong>${file.fileName}</strong>
+                    </div>
+                    <div class="pipeline-list">${lines}</div>
+                </div>
+            `;
+
         }).join('<hr>');
 
         const types = new Set();
