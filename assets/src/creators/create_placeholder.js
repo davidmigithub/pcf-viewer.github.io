@@ -48,7 +48,7 @@ function createPlaceholder(block, pipelineRef, units) {
   if (points.length === 1 || points[0].position.equals(points[1].position)) {
     const { position, radius } = points[0];
     const sphereGeo = new SphereGeometry(radius * 0.96, GEOMETRY_SEGMENTS, GEOMETRY_SEGMENTS);
-    const mesh = new Mesh(sphereGeo, CAP_MATERIAL.clone());
+    const mesh = new Mesh(sphereGeo, PLACEHOLDER_MATERIAL.clone());
     mesh.position.copy(position);
     mesh.name = 'Placeholder (Sphere)';
     mesh.userData = { pipeline: pipelineRef, type: block.type, params: { radius }, rawBlock: block };
@@ -67,7 +67,7 @@ function createPlaceholder(block, pipelineRef, units) {
   cylGeo.applyQuaternion(quat);
   cylGeo.translate(p0.x, p0.y, p0.z);
 
-  const mesh = new Mesh(cylGeo, CAP_MATERIAL.clone());
+  const mesh = new Mesh(cylGeo, PLACEHOLDER_MATERIAL.clone());
   mesh.name = 'Placeholder (Cylinder)';
   mesh.userData = {
     pipeline: pipelineRef,
