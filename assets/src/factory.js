@@ -9,48 +9,48 @@ import { createOlet } from "./creators/create_olet.js";
 import { createValve } from "./creators/create_valve.js";
 
 export class ComponentFactory {
-  constructor(units, materials) {
-    this.units = units;
-    this.materials = materials;
-  }
-
-  build({ block }, pipelineRef) {
-    let mesh = null;
-
-    switch (block.type.toUpperCase()) {
-        case 'PIPE':
-          mesh = createPipe(block, pipelineRef, this.units);
-          break;
-        case 'ELBOW':
-        case 'BEND':
-          mesh = createBend(block, pipelineRef, this.units);
-          break;
-        case 'REDUCER-CONCENTRIC':
-          mesh = createReducerCon(block, pipelineRef, this.units);
-          break;
-        case 'TEE':
-          mesh = createTee(block, pipelineRef, this.units);
-          break;
-        case 'FLANGE':
-          mesh = createFlange(block, pipelineRef, this.units);
-          break;
-        case 'CAP':
-          mesh = createCap(block, pipelineRef, this.units);
-          break;
-        case 'OLET':
-          mesh = createOlet(block, pipelineRef, this.units);
-          break;
-        case 'VALVE':
-          mesh = createValve(block, pipelineRef, this.units);
-          break;
-
-      // TODO: add more cases
-
-      default:
-        console.warn('ComponentFactory: Unsupported component type', block.type);
-        return createPlaceholder(block, pipelineRef, this.units);
+    constructor(units, materials, pipelines) {
+        this.units = units;
+        this.materials = materials;
+        this.pipelines = pipelines;
     }
 
-    return mesh;
-  }
+    build({ block }, pipelineRef) {
+        let mesh = null;
+
+        const currentPipeline = this.pipelines.find(plc => plc.reference === pipelineRef);
+
+        switch (block.type.toUpperCase()) {
+            case 'PIPE':
+                mesh = createPipe(block, pipelineRef, this.units, this.pipelines);
+                break;
+            case 'ELBOW':
+            case 'BEND':
+                mesh = createBend(block, pipelineRef, this.units, this.pipelines);
+                break;
+            case 'REDUCER-CONCENTRIC':
+                mesh = createReducerCon(block, pipelineRef, this.units, this.pipelines);
+                break;
+            case 'TEE':
+                mesh = createTee(block, pipelineRef, this.units, this.pipelines);
+                break;
+            case 'FLANGE':
+                mesh = createFlange(block, pipelineRef, this.units, this.pipelines);
+                break;
+            case 'CAP':
+                mesh = createCap(block, pipelineRef, this.units, this.pipelines);
+                break;
+            case 'OLET':
+                mesh = createOlet(block, pipelineRef, this.units, this.pipelines);
+                break;
+            case 'VALVE':
+                mesh = createValve(block, pipelineRef, this.units, this.pipelines);
+                break;
+            default:
+                console.warn('ComponentFactory: Unsupported component type', block.type);
+                return createPlaceholder(block, pipelineRef, this.units);
+        }
+
+        return mesh;
+    }
 }
