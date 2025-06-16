@@ -161,7 +161,6 @@ export class PcfParser {
                 break;
             }
 
-            // Detect unindented PIPELINE-REFERENCE as new pipeline
             if (raw.startsWith('PIPELINE-REFERENCE')) {
                 if (currentPipeline) {
                     flushComponent();
@@ -178,7 +177,6 @@ export class PcfParser {
 
             if (!currentPipeline) continue;
 
-            // Gather header lines until a non-indented line appears
             if (!pipelineHeaderComplete) {
                 if (/^[ \t]/.test(raw)) {
                     pipelineHeaderLines.push(raw);

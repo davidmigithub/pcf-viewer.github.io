@@ -7,6 +7,7 @@ import { createFlange } from "./creators/create_flange.js";
 import { createCap } from "./creators/create_cap.js";
 import { createOlet } from "./creators/create_olet.js";
 import { createValve } from "./creators/create_valve.js";
+import { createWeld } from "./creators/create_weld.js";
 
 export class ComponentFactory {
     constructor(units, materials, pipelines) {
@@ -45,6 +46,9 @@ export class ComponentFactory {
                 break;
             case 'VALVE':
                 mesh = createValve(block, pipelineRef, this.units, this.pipelines);
+                break;
+            case 'WELD':
+                mesh = createWeld(block, pipelineRef, this.units, this.pipelines);
                 break;
             default:
                 console.warn('ComponentFactory: Unsupported component type', block.type);
