@@ -170,7 +170,6 @@ export class SceneBuilder {
 
   _handlePick(clientX, clientY) {
     this.raycaster.setFromCamera(this.pointer, this.camera);
-    const hits = this.raycaster.intersectObjects(this.scene.children, true);
 
     // only visible objects
     const visibleMeshes = [];
@@ -179,6 +178,8 @@ export class SceneBuilder {
             visibleMeshes.push(obj);
         }
     });
+
+    const hits = this.raycaster.intersectObjects(visibleMeshes, true);
 
     if (hits.length > 0) {
       const picked = hits[0].object;
