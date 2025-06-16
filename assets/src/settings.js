@@ -32,9 +32,9 @@ export const HIGHLIGHT_EMISSIVE_INTENSITY =     1.0;
 export const HIGHLIGHT_OPACITY =                0.8;
 
 // LIGHT SETTINGS
-export const HEMI_LIGHT_SKY_COLOR = 0xffffff;
-export const HEMI_LIGHT_GROUND_COLOR = 0x555555;
-export const HEMI_LIGHT_INTENSITY = 8;
+export const HEMI_LIGHT_SKY_COLOR =             0xffffff;
+export const HEMI_LIGHT_GROUND_COLOR =          0x555555;
+export const HEMI_LIGHT_INTENSITY =             8;
 
 // VIEW HELPER
-export const VIEW_HELPER_POSITION = 'top-right';
+export const VIEW_HELPER_POSITION =             'top-right';
