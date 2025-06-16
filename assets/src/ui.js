@@ -94,6 +94,17 @@ export class UI {
                 const fileName = group.dataset.file;
                 if (fileName && confirm(`Datei "${fileName}" wirklich entfernen?`)) {
                     this.builder.removeFile(fileName);
+
+                    const next = group.nextElementSibling;
+                    if (next && next.tagName === 'HR') {
+                        next.remove();
+                    } else {
+                        const prev = group.previousElementSibling;
+                        if (prev && prev.tagName === 'HR') {
+                            prev.remove();
+                        }
+                    }
+
                     group.remove();
                 }
             });
