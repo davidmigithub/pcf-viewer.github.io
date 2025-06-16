@@ -154,7 +154,13 @@ export class SceneBuilder {
                     }
                 }
             });
-            this._frameCamera(this.rootGroup);
+            if (this.rootGroup.children.length === 0) {
+                this.controls.target.set(0, 0, 0);
+                this.controls.update();
+                this.camera.position.set(20, 20, 20);
+            } else {
+                this._frameCamera(this.rootGroup);
+            }
         } else {
             console.warn(`File group '${fileName}' not found in scene`);
         }
