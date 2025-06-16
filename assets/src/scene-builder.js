@@ -78,26 +78,27 @@ export class SceneBuilder {
             }
         });
 
-        // Root group for all loaded files
         this.rootGroup = new Group();
         this.rootGroup.name = "PipingSystem";
         this.scene.add(this.rootGroup);
+
+        this.filesData = [];
 
         this.ui = new UI();
         this._setupResizeListener();
         this._animate();
     }
 
-    /**
-     * Adds a new parsed file into the scene under its filename group
-     */
     addFile(parsed, fileName) {
+        this.removeFile(fileName, false);
+
+        this.filesData.push({ parsed, fileName });
+        this.ui.buildSideMenu(this.filesData);
+
         const pipelinesArray = Array.isArray(parsed.pipelines?.pipelines)
             ? parsed.pipelines.pipelines
             : [];
-
         const factory = new ComponentFactory(parsed.units, parsed.materials, pipelinesArray);
-
         const fileGroup = new Group();
         fileGroup.name = fileName;
 
@@ -105,7 +106,6 @@ export class SceneBuilder {
             const uniqueName = `${fileName}|${plc.reference}`;
             const plGroup = new Group();
             plGroup.name = uniqueName;
-
             plc.components.forEach(block => {
                 const mesh = factory.build({ block }, plc.reference);
                 if (mesh) {
@@ -115,7 +115,6 @@ export class SceneBuilder {
                     plGroup.add(mesh);
                 }
             });
-
             fileGroup.add(plGroup);
         });
 
@@ -140,35 +139,34 @@ export class SceneBuilder {
         });
     }
 
-    removeFile(fileName) {
+    removeFile(fileName, rebuildMenu = true) {
         const group = this.rootGroup.getObjectByName(fileName);
         if (group) {
             this.rootGroup.remove(group);
             group.traverse(obj => {
                 if (obj.geometry) obj.geometry.dispose();
                 if (obj.material) {
-                    if (Array.isArray(obj.material)) {
-                        obj.material.forEach(m => m.dispose());
-                    } else {
-                        obj.material.dispose();
-                    }
+                    if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
+                    else obj.material.dispose();
                 }
             });
-            if (this.rootGroup.children.length === 0) {
-                this.controls.target.set(0, 0, 0);
-                this.controls.update();
-                this.camera.position.set(20, 20, 20);
-            } else {
-                this._frameCamera(this.rootGroup);
-            }
+        }
+        const idx = this.filesData.findIndex(f => f.fileName === fileName);
+        if (idx !== -1) this.filesData.splice(idx, 1);
+
+        if (rebuildMenu) this.ui.buildSideMenu(this.filesData);
+
+        if (this.rootGroup.children.length === 0) {
+            this.controls.target.set(0, 0, 0);
+            this.controls.update();
+            this.camera.position.set(20, 20, 20);
         } else {
-            console.warn(`File group '${fileName}' not found in scene`);
+            this._frameCamera(this.rootGroup);
         }
     }
 
     _frameCamera(rootGroup) {
-        const MAX_REFRAME_ANGLE = Math.PI / 12; // 15°
-
+        const MAX_REFRAME_ANGLE = Math.PI / 12; // 15°, move to settings.js later on
         const box = new Box3().setFromObject(rootGroup);
         const center = box.getCenter(new Vector3());
         const size = box.getSize(new Vector3()).length();
@@ -176,19 +174,15 @@ export class SceneBuilder {
 
         const currentTarget = this.controls.target.clone();
         const currentDir = this.camera.position.clone().sub(currentTarget).normalize();
-
         const newDir = currentTarget.clone().sub(center).negate().normalize();
-
         const dot = currentDir.dot(newDir);
         const angle = Math.acos(Math.min(Math.max(dot, -1), 1));
-
         if (angle < MAX_REFRAME_ANGLE) {
             return;
         }
 
         const newPos = center.clone().add(currentDir.multiplyScalar(offset));
         this.camera.position.copy(newPos);
-
         this.controls.target.copy(center);
         this.controls.update();
     }
