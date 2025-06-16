@@ -89,12 +89,12 @@ export class UI {
 
         this.sideMenu.querySelectorAll('.delete-file-btn').forEach(btn => {
             btn.addEventListener('click', e => {
-                e.stopPropagation(); // Verhindert Toggle beim Klick auf Button
+                e.stopPropagation();
                 const group = btn.closest('.file-group');
                 const fileName = group.dataset.file;
                 if (fileName && confirm(`Datei "${fileName}" wirklich entfernen?`)) {
-                    this.builder.removeFile(fileName);  // ← dein eigenes Modell-Handling hier
-                    group.remove(); // entfernt die DOM-Gruppe sofort
+                    this.builder.removeFile(fileName);
+                    group.remove();
                 }
             });
         });

@@ -140,6 +140,25 @@ export class SceneBuilder {
         });
     }
 
+    removeFile(fileName) {
+        const group = this.rootGroup.getObjectByName(fileName);
+        if (group) {
+            this.rootGroup.remove(group);
+            group.traverse(obj => {
+                if (obj.geometry) obj.geometry.dispose();
+                if (obj.material) {
+                    if (Array.isArray(obj.material)) {
+                        obj.material.forEach(m => m.dispose());
+                    } else {
+                        obj.material.dispose();
+                    }
+                }
+            });
+        } else {
+            console.warn(`File group '${fileName}' not found in scene`);
+        }
+    }
+
     _frameCamera(rootGroup) {
         const box = new Box3().setFromObject(rootGroup);
         const center = box.getCenter(new Vector3());
