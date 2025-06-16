@@ -154,6 +154,7 @@ export class SceneBuilder {
                     }
                 }
             });
+            this._frameCamera(this.rootGroup);
         } else {
             console.warn(`File group '${fileName}' not found in scene`);
         }
