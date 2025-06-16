@@ -2,38 +2,41 @@ import { Mesh, CylinderGeometry, SphereGeometry, Vector3, Quaternion } from "../
 import { PLACEHOLDER_MATERIAL, GEOMETRY_SEGMENTS } from "../settings.js";
 
 /**
- * Erzeugt ein generisches Platzhalter-Mesh für nicht unterstützte Komponenten.
- * - Bei zwei Punkten mit unterschiedlichen Koordinaten: Zylinder.
- * - Bei nur einem Punkt oder identischen Punkten: Kugel.
+ * Erzeugt ein Platzhalter-Mesh für nicht unterstützte Komponenten.
+ * - Zwei verschiedene Punkte mit Durchmesser → Zylinder.
+ * - Ein Punkt oder gleiche Punkte → Kugel.
  *
- * @param {Object} block        - Der Komponentenblock mit Geometrieinformationen.
+ * @param {Object} block        - Komponentenblock mit Geometrie.
  * @param {string} pipelineRef  - Pipeline-Referenz.
  * @param {Object} units        - Einheitenskalierung { coordScale, boreScale }
  * @returns {Mesh|null}
  */
 function createPlaceholder(block, pipelineRef, units) {
   const geometry = block.geometry || {};
-  const pointTypes = Object.keys(geometry).filter(key => key.includes('POINT'));
+  const relevantKeys = Object.keys(geometry).filter(
+    key => key.includes('POINT') || key === 'CO-ORDS'
+  );
 
-  let points = [];
+  const points = [];
 
-  for (const type of pointTypes) {
-    const entries = geometry[type];
+  for (const key of relevantKeys) {
+    const entries = geometry[key];
     if (Array.isArray(entries)) {
       for (const entry of entries) {
         if (entry.coords && entry.nominal != null) {
-          const position = new Vector3(
+          const pos = new Vector3(
             entry.coords[0] * units.coordScale,
             entry.coords[1] * units.coordScale,
             entry.coords[2] * units.coordScale
           );
 
-          const diameter = typeof entry.nominal === 'number'
+          const rawDia = typeof entry.nominal === 'number'
             ? entry.nominal
             : parseFloat(entry.nominal);
-          if (isNaN(diameter)) continue;
+          if (isNaN(rawDia)) continue;
 
-          points.push({ position, radius: (diameter * units.boreScale) / 2 });
+          const radius = (rawDia * units.boreScale) / 2;
+          points.push({ position: pos, radius });
         }
       }
     }
@@ -44,20 +47,25 @@ function createPlaceholder(block, pipelineRef, units) {
     return null;
   }
 
-  // Nur ein Punkt → Kugel
+  // Nur ein Punkt oder identische Punkte → Kugel
   if (points.length === 1 || points[0].position.equals(points[1].position)) {
     const { position, radius } = points[0];
     const sphereGeo = new SphereGeometry(radius * 0.96, GEOMETRY_SEGMENTS, GEOMETRY_SEGMENTS);
     const mesh = new Mesh(sphereGeo, PLACEHOLDER_MATERIAL.clone());
     mesh.position.copy(position);
     mesh.name = 'Placeholder (Sphere)';
-    mesh.userData = { pipeline: pipelineRef, type: block.type, params: { radius }, rawBlock: block };
+    mesh.userData = {
+      pipeline: pipelineRef,
+      type: block.type,
+      params: { radius },
+      rawBlock: block
+    };
     return mesh;
   }
 
-  // Zwei Punkte → Zylinder
+  // Zwei unterschiedliche Punkte → Zylinder
   const [p0, p1] = [points[0].position, points[1].position];
-  const radius = Math.min(points[0].radius, points[1].radius); // konservativ
+  const radius = Math.min(points[0].radius, points[1].radius);
 
   const dir = new Vector3().subVectors(p1, p0);
   const length = dir.length();
