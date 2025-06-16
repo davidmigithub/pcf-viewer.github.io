@@ -29,9 +29,11 @@ export class UI {
             `).join('');
 
             return `
-                <div class="file-group">
+                <div class="file-group" data-file="${file.fileName}">
                     <div class="file-name toggle-header">
-                        <span class="toggle-arrow">﹀</span> <strong>${file.fileName}</strong>
+                        <span class="toggle-arrow">▽</span>
+                        <strong>${file.fileName}</strong>
+                        <button class="delete-file-btn" title="Datei entfernen">🗑️</button>
                     </div>
                     <div class="pipeline-list">${lines}</div>
                 </div>
@@ -82,6 +84,18 @@ export class UI {
             header.addEventListener('click', () => {
                 const group = header.closest('.file-group');
                 group.classList.toggle('collapsed');
+            });
+        });
+
+        this.sideMenu.querySelectorAll('.delete-file-btn').forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.stopPropagation(); // Verhindert Toggle beim Klick auf Button
+                const group = btn.closest('.file-group');
+                const fileName = group.dataset.file;
+                if (fileName && confirm(`Datei "${fileName}" wirklich entfernen?`)) {
+                    this.builder.removeFile(fileName);  // ← dein eigenes Modell-Handling hier
+                    group.remove(); // entfernt die DOM-Gruppe sofort
+                }
             });
         });
     }
