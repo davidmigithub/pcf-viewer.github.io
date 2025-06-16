@@ -10,8 +10,8 @@ import { createValve } from "./creators/create_valve.js";
 import { createWeld } from "./creators/create_weld.js";
 import { Vector3 } from "./vendor_mods/three.module.js";
 
-export function getExternalKeypointDirection(block, pipelineRef) {
-    const pipeline = this.pipelines.find(plc => plc.reference === pipelineRef);
+export function getExternalKeypointDirection(block, pipelineRef, pipelines) {
+    const pipeline = pipelines.find(plc => plc.reference === pipelineRef);
     let count = 0;
     if (pipeline) {
         // gather all point keys from block (e.g., END-POINT, BRANCH1-POINT, PORT-POINT, etc.)

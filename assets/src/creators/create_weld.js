@@ -18,7 +18,7 @@ import { getExternalKeypointDirection } from "../factory.js";
  * @param {string} pipelineRef pipeline reference for userData
  * @returns {Group|null}
  */
-function createWeld(block, pipelineRef) {
+function createWeld(block, pipelineRef, pipelines) {
     const ends = block.geometry['END-POINT'];
     if (!ends || ends.length < 2) {
         console.warn('createWeld: need two END-POINTs', block);
@@ -40,7 +40,7 @@ function createWeld(block, pipelineRef) {
 
     // determine axis direction via factory helper
     // passes block to exclude itself and pipelineRef to limit search
-    const pipeDir = getExternalKeypointDirection(block, pipelineRef);
+    const pipeDir = getExternalKeypointDirection(block, pipelineRef, pipelines);
     const alignQuat = new Quaternion().setFromUnitVectors(
         new Vector3(0, 1, 0),
         pipeDir
