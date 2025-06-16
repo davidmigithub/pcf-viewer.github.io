@@ -288,14 +288,13 @@ body {
 
 /* Aufgeklapptes Menu */
 #sideMenu:hover {
-  /* fixe Ziel-Breite statt max-content */
-  min-width: 250px;           /* passe den Wert je nach Content an */
+  min-width: 250px;
   width: auto;
-  /* kein Delay beim Aufklappen */
   transition-delay: 0s;
 }
 
 #sideMenu:hover::before {
+  display: none;
   transform: translateY(-50%) scaleX(1) rotate(180deg);
   color: #ddd;
 }
@@ -320,8 +319,7 @@ body {
 
 #sideMenu:hover .menu-content {
   opacity: 1;
-  /* erst sichtbar, wenn Breite schon aufgeklappt ist */
-  transition-delay: 0.3s;
+  transition-delay: 0.1s;
 }
 
 #sideMenu .menu-content h3 {
