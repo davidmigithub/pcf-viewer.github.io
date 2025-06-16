@@ -8,39 +8,6 @@ import { createCap } from "./creators/create_cap.js";
 import { createOlet } from "./creators/create_olet.js";
 import { createValve } from "./creators/create_valve.js";
 import { createWeld } from "./creators/create_weld.js";
-import { Vector3 } from "./vendor_mods/three.module.js";
-
-export function getExternalKeypointDirection(block, pipelineRef, pipelines) {
-    const pipeline = pipelines.find(plc => plc.reference === pipelineRef);
-    let count = 0;
-    if (pipeline) {
-        // gather all point keys from block (e.g., END-POINT, BRANCH1-POINT, PORT-POINT, etc.)
-        const blockPoints = (Object.keys(block.geometry) || [])
-            .filter(key => key.toUpperCase().endsWith('-POINT'))
-            .flatMap(key => block.geometry[key]);
-
-        pipeline.components.forEach(comp => {
-            if (comp === block) return;
-            Object.keys(comp.geometry)
-                .filter(key => key.toUpperCase().endsWith('-POINT'))
-                .forEach(key => {
-                    comp.geometry[key].forEach(pt => {
-                        // check if any blockPoint matches this point
-                        if (blockPoints.some(bp =>
-                            bp.coords[0] === pt.coords[0] &&
-                            bp.coords[1] === pt.coords[1] &&
-                            bp.coords[2] === pt.coords[2]
-                        )) {
-                            count++;
-                        }
-                    });
-                });
-        });
-    }
-    console.log(`getWeldDirection: found ${count} matching keypoints in pipeline ${pipelineRef}`);
-    // TODO: derive actual direction from found components, for now return dummy X-axis
-    return new Vector3(1, 0, 0);
-}
 
 export class ComponentFactory {
     constructor(units, materials, pipelines) {
@@ -51,6 +18,8 @@ export class ComponentFactory {
 
     build({ block }, pipelineRef) {
         let mesh = null;
+
+        const currentPipeline = this.pipelines.find(plc => plc.reference === pipelineRef);
 
         switch (block.type.toUpperCase()) {
             case 'PIPE':
