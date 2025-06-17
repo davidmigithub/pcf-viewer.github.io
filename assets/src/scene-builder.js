@@ -142,27 +142,6 @@ export class SceneBuilder {
         this._frameCamera(this.rootGroup);
     }
 
-    togglePipeline(uniqueName, visible) {
-        // Persist state
-        this.pipelineVisibility[uniqueName] = visible;
-        const group = this.scene.getObjectByName(uniqueName);
-        if (group) {
-            group.visible = visible;
-        } else {
-            console.warn(`Pipeline group '${uniqueName}' not found`);
-        }
-    }
-
-    toggleType(type, visible) {
-        // Persist state
-        this.typeVisibility[type] = visible;
-        this.scene.traverse(obj => {
-            if (obj.isMesh && obj.userData.type === type) {
-                obj.visible = visible;
-            }
-        });
-    }
-
     removeFile(fileName) {
         const group = this.rootGroup.getObjectByName(fileName);
         if (group) {
@@ -188,6 +167,27 @@ export class SceneBuilder {
         } else {
             this._frameCamera(this.rootGroup);
         }
+    }
+
+    togglePipeline(uniqueName, visible) {
+        // Persist state
+        this.pipelineVisibility[uniqueName] = visible;
+        const group = this.scene.getObjectByName(uniqueName);
+        if (group) {
+            group.visible = visible;
+        } else {
+            console.warn(`Pipeline group '${uniqueName}' not found`);
+        }
+    }
+
+    toggleType(type, visible) {
+        // Persist state
+        this.typeVisibility[type] = visible;
+        this.scene.traverse(obj => {
+            if (obj.isMesh && obj.userData.type === type) {
+                obj.visible = visible;
+            }
+        });
     }
 
     _frameCamera(rootGroup) {

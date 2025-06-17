@@ -22,7 +22,7 @@ body {
     width: 25%;
     min-width: 450px;
     height: 15%;
-    min-height: 250px;
+    min-height: 375px;
     padding: 40px 20px;
     background: #ffffff;
     border-radius: 20px;
@@ -68,7 +68,7 @@ body {
     opacity: 0;
 }
 
-.drop-card-content .btn {
+.drop-card-content .select-btn {
     display: inline-flex;
     align-items: center;
     padding: 12px 24px;
@@ -81,8 +81,25 @@ body {
     transition: background .2s;
 }
 
-.drop-card-content .btn:hover {
+.drop-card-content .select-btn:hover {
     background: #0056b3;
+}
+
+.drop-card-content .sample-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 24px;
+    font-size: 16px;
+    background: #19a146;
+    color: #fff;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.drop-card-content .sample-btn:hover {
+    background: #137a35;
 }
 
 .drop-card-content .icon {
@@ -92,13 +109,13 @@ body {
 
 .drop-card-content .or-text-or {
     margin-top: 20px;
+    margin-bottom: 20px;
     font-size: 13px;
     color: #555;
 }
 
 .drop-card-content .or-text {
     position: relative;
-    margin-top: 16px;
     font-size: 14px;
     color: #333;
     width: 100%;
@@ -115,6 +132,9 @@ body {
 }
 
 #select-file {
+    box-shadow: 0px 18px 7px -15px rgba(0, 0, 0, 0.3);
+}
+#load-sample {
     box-shadow: 0px 18px 7px -15px rgba(0, 0, 0, 0.3);
 }
 

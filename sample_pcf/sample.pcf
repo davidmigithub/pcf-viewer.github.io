@@ -7,6 +7,8 @@ UNITS-BOLT-LENGTH    MM
 PIPELINE-REFERENCE   Sample_1
     DRAWINGNAME      Sample_1.dwg
     Date-DMY         DD.MM.YYYY
+    COMPANY          RX Design Germany GmbH
+    INFO             generated from Revit with R2P
 END-POSITION-OPEN
     CO-ORDS 3645.7566 4020.3287 2743.2000
 END-POSITION-OPEN
@@ -506,6 +508,8 @@ WELD
 PIPELINE-REFERENCE   Sample_2 
     DRAWINGNAME      Sample_2.dwg
     Date-DMY         DD.MM.YYYY
+    COMPANY          RX Design Germany GmbH
+    INFO             generated from Revit with R2P
 END-POSITION-OPEN
     CO-ORDS 1867.7566 2804.3287 2743.2000
 END-POSITION-OPEN
