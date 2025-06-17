@@ -377,3 +377,15 @@ body {
 .delete-file-btn:hover {
   color: #f55;
 }
+
+.visit-counter {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 1001;
+}
+.visit-counter img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
