@@ -10,9 +10,11 @@
       visibility: hidden;
       background-color: #151515;
     }
+
     html.no-flash {
       background-color: #151515;
     }
+
     [hidden] {
       display: none !important;
     }
@@ -20,7 +22,7 @@
 
   <!-- Main Styles & Favicon -->
   <link rel="stylesheet" href="assets/css/main.css" media="print"
-        onload="this.media='all';this.onload=null;document.documentElement.classList.remove('no-flash');">
+    onload="this.media='all';this.onload=null;document.documentElement.classList.remove('no-flash');">
   <link rel="icon" href="assets/img/favicon.ico">
 
   <title>PCF Viewer</title>
@@ -54,7 +56,7 @@
       <div class="or-text-or">or</div>
       <div class="or-text">
         <a href="https://www.youtube.com/watch?v=GtUVQei3nX4" target="_blank" rel="noopener noreferrer"
-           class="invisible-link">
+          class="invisible-link">
           Drop it like it's hot🎵
         </a>
       </div>
@@ -64,6 +66,12 @@
   <!-- App Container & Side Menu -->
   <div id="app"></div>
   <div id="sideMenu" hidden></div>
+
+  <div class="visit-counter" style="text-align:center; margin:1rem 0;">
+    <img
+      src="https://hitscounter.dev/api/hit?url=https%3A%2F%2Ffinseifert.github.io%2Fpcf-viewer.github.io%2F&label=PCF+Viewer&icon=github&color=%23198754"
+      alt="PCF Viewer Page Views" style="max-width:100%; height:auto;">
+  </div>
 
 </body>
 
