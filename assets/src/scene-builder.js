@@ -82,6 +82,10 @@ export class SceneBuilder {
         this.rootGroup.name = "PipingSystem";
         this.scene.add(this.rootGroup);
 
+        // State maps to persist visibility
+        this.pipelineVisibility = {};
+        this.typeVisibility = {};
+
         this.filesData = [];
 
         this.ui = new UI();
@@ -96,7 +100,6 @@ export class SceneBuilder {
         this.removeFile(fileName, true);
 
         this.filesData.push({ parsed, fileName });
-        this.ui.buildSideMenu(this.filesData);
 
         const pipelinesArray = Array.isArray(parsed.pipelines?.pipelines)
             ? parsed.pipelines.pipelines
@@ -122,10 +125,26 @@ export class SceneBuilder {
         });
 
         this.rootGroup.add(fileGroup);
+
+        // Apply saved visibility for pipelines in this file
+        pipelinesArray.forEach(plc => {
+            const uniqueName = `${fileName}|${plc.reference}`;
+            const visible = this.pipelineVisibility[uniqueName] !== false;
+            this.togglePipeline(uniqueName, visible);
+        });
+
+        // Apply saved visibility for types
+        Object.entries(this.typeVisibility).forEach(([type, visible]) => {
+            if (visible === false) this.toggleType(type, false);
+        });
+
+        this.ui.buildSideMenu(this.filesData);
         this._frameCamera(this.rootGroup);
     }
 
     togglePipeline(uniqueName, visible) {
+        // Persist state
+        this.pipelineVisibility[uniqueName] = visible;
         const group = this.scene.getObjectByName(uniqueName);
         if (group) {
             group.visible = visible;
@@ -135,6 +154,8 @@ export class SceneBuilder {
     }
 
     toggleType(type, visible) {
+        // Persist state
+        this.typeVisibility[type] = visible;
         this.scene.traverse(obj => {
             if (obj.isMesh && obj.userData.type === type) {
                 obj.visible = visible;

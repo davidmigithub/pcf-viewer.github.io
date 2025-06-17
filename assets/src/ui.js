@@ -14,19 +14,24 @@ export class UI {
     buildSideMenu(filesData) {
         if (!this.builder) return;
 
+        // Generate pipeline checkboxes with persisted states
         const plcHtml = filesData.map(file => {
             const pipelines = Array.isArray(file.parsed.pipelines?.pipelines)
                 ? file.parsed.pipelines.pipelines
                 : [];
 
-            const lines = pipelines.map(pl => `
+            const lines = pipelines.map(pl => {
+                const uniqueName = `${file.fileName}|${pl.reference}`;
+                const isChecked = this.builder.pipelineVisibility[uniqueName] !== false;
+                return `
             <label class="pipeline-entry">
                 <input type="checkbox"
-                    data-pipeline="${file.fileName}|${pl.reference}"
-                    checked>
+                    data-pipeline="${uniqueName}"
+                    ${isChecked ? 'checked' : ''}>
                 ${pl.reference}
             </label>
-            `).join('');
+            `;
+            }).join('');
 
             return `
             <div class="file-group" data-file="${file.fileName}">
@@ -40,6 +45,7 @@ export class UI {
             `;
         }).join('<hr>');
 
+        // Generate type checkboxes with persisted states
         const types = new Set();
         filesData.forEach(file =>
             (file.parsed.pipelines?.pipelines || []).forEach(pl =>
@@ -48,14 +54,17 @@ export class UI {
                 })
             )
         );
-        const typeHtml = Array.from(types).map(t => `
+        const typeHtml = Array.from(types).map(t => {
+            const isChecked = this.builder.typeVisibility[t] !== false;
+            return `
             <label>
             <input type="checkbox"
                     data-type="${t}"
-                    checked>
+                    ${isChecked ? 'checked' : ''}>
             ${t}
             </label>
-        `).join('<br>');
+        `;
+        }).join('<br>');
 
         this.sideMenu.innerHTML = `
             <div class="menu-content">
