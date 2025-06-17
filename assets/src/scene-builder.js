@@ -238,13 +238,7 @@ export class SceneBuilder {
 
         if (hits.length > 0) {
             const picked = hits[0].object;
-
-            // if it's the WeldPicker, only show info, no highlight
-            if (picked.name === 'WeldPicker') {
-                this.ui.showInfo(picked.userData.rawBlock, clientX, clientY);
-                return;
-            }
-
+            
             if (this.INTERSECTED !== picked) {
                 if (this.INTERSECTED) this._clearSelection();
                 this.INTERSECTED = picked;

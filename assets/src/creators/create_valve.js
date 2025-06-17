@@ -5,7 +5,7 @@ import {
     Vector3,
     Quaternion
 } from "../vendor_mods/three.module.js";
-import { VALVE_MATERIAL, GEOMETRY_SEGMENTS } from "../settings.js";
+import { VALVE_MATERIAL, HITBOX_MATERIAL, GEOMETRY_SEGMENTS } from "../settings.js";
 import { createPipe } from "./create_pipe.js";
 
 /**
@@ -86,7 +86,7 @@ function createValve(block, pipelineRef, units) {
     // Unsichtbarer Cover-Pipe für Picking
     let cover = createPipe(block, pipelineRef, units);
     if (cover) {
-        cover.material = cover.material.clone();
+        cover.material = HITBOX_MATERIAL.clone();
         cover.material.transparent = true;
         cover.material.opacity = 0;
         cover.material.depthWrite = false;
