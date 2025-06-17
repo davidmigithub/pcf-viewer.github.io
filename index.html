@@ -2,121 +2,69 @@
 <html class="no-flash" lang="de">
 
 <head>
-    <!-- Meta & Fallback Styles -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        .no-flash body {
-            visibility: hidden;
-            background-color: #151515;
-        }
+  <!-- Meta & Fallback Styles -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    .no-flash body {
+      visibility: hidden;
+      background-color: #151515;
+    }
+    html.no-flash {
+      background-color: #151515;
+    }
+    [hidden] {
+      display: none !important;
+    }
+  </style>
 
-        html.no-flash {
-            background-color: #151515;
-        }
-
-        [hidden] {
-            display: none !important;
-        }
-    </style>
-
-    <!-- Main Styles & Favicon -->
-    <link rel="stylesheet" href="assets/css/main.css" media="print"
+  <!-- Main Styles & Favicon -->
+  <link rel="stylesheet" href="assets/css/main.css" media="print"
         onload="this.media='all';this.onload=null;document.documentElement.classList.remove('no-flash');">
-    <link rel="icon" href="assets/img/favicon.ico">
+  <link rel="icon" href="assets/img/favicon.ico">
 
-    <title>PCF Viewer</title>
+  <title>PCF Viewer</title>
 
-    <!-- Main Script -->
-    <script type="module" src="assets/src/main.js"></script>
+  <!-- Main Script -->
+  <script type="module" src="assets/src/main.js"></script>
 </head>
 
 <body>
-    <!-- Hidden File Input (multiple files allowed) -->
-    <input id="file-input" type="file" accept=".pcf" hidden multiple>
+  <!-- Hidden File Input (multiple files allowed) -->
+  <input id="file-input" type="file" accept=".pcf" hidden multiple>
 
-    <!-- Info Box (static) -->
-    <div id="infoBox" class="info-box" style="display:none;"></div>
+  <!-- Info Box (static) -->
+  <div id="infoBox" class="info-box" style="display:none;"></div>
 
-    <!-- Spinner Overlay -->
-    <div id="spinner-overlay" hidden>
-        <div id="spinner-box">
-            <div id="spinner"></div>
-            <div id="spinner-text">Loading…</div>
-        </div>
+  <!-- Spinner Overlay -->
+  <div id="spinner-overlay" hidden>
+    <div id="spinner-box">
+      <div id="spinner"></div>
+      <div id="spinner-text">Loading…</div>
     </div>
+  </div>
 
-    <!-- Drop Card / File Selector -->
-    <div class="drop-card">
-        <div class="drop-card-content">
-            <button id="select-file" class="btn">
-                <span class="icon">＋</span>
-                Select file(s)
-            </button>
-            <div class="or-text-or">or</div>
-            <div class="or-text">
-                <a href="https://www.youtube.com/watch?v=GtUVQei3nX4" target="_blank" rel="noopener noreferrer"
-                    class="invisible-link">
-                    Drop it like it's hot🎵
-                </a>
-            </div>
-        </div>
+  <!-- Drop Card / File Selector -->
+  <div class="drop-card">
+    <div class="drop-card-content">
+      <button id="select-file" class="btn">
+        <span class="icon">＋</span>
+        Select file(s)
+      </button>
+      <div class="or-text-or">or</div>
+      <div class="or-text">
+        <a href="https://www.youtube.com/watch?v=GtUVQei3nX4" target="_blank" rel="noopener noreferrer"
+           class="invisible-link">
+          Drop it like it's hot🎵
+        </a>
+      </div>
     </div>
+  </div>
 
-    <!-- App Container & Side Menu -->
-    <div id="app"></div>
-    <div id="sideMenu" hidden></div>
+  <!-- App Container & Side Menu -->
+  <div id="app"></div>
+  <div id="sideMenu" hidden></div>
 
-    <!-- Initialization Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const card = document.querySelector('.drop-card');
-            const fileInput = document.getElementById('file-input');
-            const selectBtn = document.getElementById('select-file');
-            const sideMenu = document.getElementById('sideMenu');
-            const spinnerOverlay = document.getElementById('spinner-overlay');
-            const spinnerText = document.getElementById('spinner-text');
-
-            // File handling logic
-            function handleFile(file) {
-                sideMenu.innerHTML = '';
-                card.classList.add('hidden');
-
-                spinnerText.textContent = `Generate ${file.name}…`;
-                spinnerOverlay.hidden = false;
-
-                const blobUrl = URL.createObjectURL(file);
-                window.dispatchEvent(new CustomEvent('pcf-url', {
-                    detail: {
-                        url: blobUrl,
-                        name: file.name
-                    }
-                }));
-            }
-
-            // Drag & Drop handlers
-            ['dragenter', 'dragover'].forEach(evt =>
-                document.body.addEventListener(evt, e => { e.preventDefault(); document.body.classList.add('drag-hover'); })
-            );
-            ['dragleave', 'drop'].forEach(evt =>
-                document.body.addEventListener(evt, e => { e.preventDefault(); document.body.classList.remove('drag-hover'); })
-            );
-            document.body.addEventListener('drop', e => {
-                e.preventDefault();
-                Array.from(e.dataTransfer.files)
-                    .filter(f => /\.pcf$/i.test(f.name))
-                    .forEach(f => handleFile(f));
-            });
-
-            // UI Triggers
-            selectBtn.addEventListener('click', () => fileInput.click());
-            fileInput.addEventListener('change', e => {
-                Array.from(e.target.files)
-                    .filter(f => /\.pcf$/i.test(f.name))
-                    .forEach(f => handleFile(f));
-            });
-        });
-    </script>
 </body>
 
 </html>
