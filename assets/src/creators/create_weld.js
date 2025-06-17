@@ -1,33 +1,58 @@
-// create_weld.js
 import {
-    Mesh,
     Group,
-    CylinderGeometry,
     Vector3,
-    Quaternion
+    Quaternion,
+    BufferGeometry,
+    Line,
+    LineLoop,
+    LineBasicMaterial,
+    Mesh,
+    CylinderGeometry
 } from "../vendor_mods/three.module.js";
-import { WELD_MATERIAL, GEOMETRY_SEGMENTS } from "../settings.js";
+import { WELD_MATERIAL, HITBOX_MATERIAL, GEOMETRY_SEGMENTS } from "../settings.js";
+import { ComponentFactory } from "../factory.js";
 
 /**
- * Create a weld symbol: four arms at 45° intervals and a central cylinder
- * aligned with the pipe axis (thin disc when viewed along the pipe).
- * @param {Object} block       raw component block with geometry data
- * @param {string} pipelineRef pipeline reference for userData
+ * Create a weld symbol using line segments and an invisible pick volume,
+ * based on a point and a direction.
+ * @param {Object} block       Raw component block with geometry data
+ * @param {string} pipelineRef Pipeline reference for userData
  * @param {Object} units       { coordScale, boreScale }
+ * @param {Array}  pipelines   All pipelines for direction computation
  * @returns {Group|null}
  */
-function createWeld(block, pipelineRef, units) {
+function createWeld(block, pipelineRef, units, pipelines) {
+    // Determine direction via factory (currently returns dummy vector)
+    const factory = new ComponentFactory(units, /*materials=*/{}, pipelines);
+    const rawCoords = block.geometry['END-POINT']?.[0]?.coords;
+    const direction = factory.computeDirectionAtExternalKeypoint(rawCoords, block);
+
+    console.log(`createWeld: direction from factory:`, direction, block);
+
+    // Read end-point data
     const ends = block.geometry['END-POINT'];
-    if (!ends || ends.length < 2) {
-        console.warn('createWeld: need two END-POINTs', block);
+    if (!ends || ends.length === 0) {
+        console.warn('createWeld: no END-POINTs', block);
         return null;
     }
 
-    // scale end-point positions
+    // Scale end-point positions
     const p0 = new Vector3(...ends[0].coords.map(c => c * units.coordScale));
-    const p1 = new Vector3(...ends[1].coords.map(c => c * units.coordScale));
+    let point = p0;
 
-    // pipe radius from nominal diameter
+    if (ends.length === 1) {
+        console.warn('createWeld: only one END-POINT, using direction from factory', block);
+    } else {
+        const p1 = new Vector3(...ends[1].coords.map(c => c * units.coordScale));
+        const dist = p0.distanceTo(p1);
+        if (dist < 1e-6) {
+            console.warn('createWeld: identical END-POINTs, using direction from factory', block);
+        } else {
+            point = new Vector3().addVectors(p0, p1).multiplyScalar(0.5);
+        }
+    }
+
+    // Compute pipe radius
     const rawDia = parseFloat(ends[0].nominal);
     if (isNaN(rawDia)) {
         console.warn('createWeld: invalid diameter', ends[0].nominal);
@@ -35,60 +60,66 @@ function createWeld(block, pipelineRef, units) {
     }
     const radius = (rawDia * units.boreScale) / 2;
 
-    // center point of weld
-    const center = new Vector3().addVectors(p0, p1).multiplyScalar(0.5);
-
-    // pipe axis direction or fallback
-    let pipeDir = new Vector3().subVectors(p1, p0).normalize();
-    if (pipeDir.length() === 0) pipeDir.set(1, 0, 0);
-
-    // quaternion aligning local Y to pipeDir
+    // Align quaternion
     const alignQuat = new Quaternion().setFromUnitVectors(
         new Vector3(0, 1, 0),
-        pipeDir
+        direction.clone().normalize()
     );
 
-    // create weld group (origin-local)
+    // Build weld symbol group
     const weldGroup = new Group();
     weldGroup.name = 'Weld';
 
-    const material = WELD_MATERIAL.clone();
-    const armLength = radius * 1.5;
-    const armRadius = radius * 0.1;
-    const startDist = radius * 1.1;
+    const lineMaterial = new LineBasicMaterial({ color: WELD_MATERIAL.color });
+    const armLength = radius * 1.6;
+    const startDist = radius * 1.3;
     const angles = [45, 135, 225, 315];
 
-    // create four arms in local XY-plane
+    // Four radial arms in local XY plane
     angles.forEach((deg, i) => {
         const rad = deg * (Math.PI / 180);
-        const dir = new Vector3(Math.cos(rad), 0, Math.sin(rad));
-        const geo = new CylinderGeometry(armRadius, armRadius, armLength, GEOMETRY_SEGMENTS);
-        geo.translate(0, armLength / 2, 0);
-        const qArm = new Quaternion().setFromUnitVectors(
-            new Vector3(0, 1, 0),
-            dir
-        );
-        geo.applyQuaternion(qArm);
-        const mesh = new Mesh(geo, material);
-        mesh.name = `WeldArm${i+1}`;
-        mesh.userData = { pipeline: pipelineRef, type: block.type, rawBlock: block };
-        mesh.position.copy(dir.multiplyScalar(startDist));
-        weldGroup.add(mesh);
+        const dir2d = new Vector3(Math.cos(rad), 0, Math.sin(rad));
+
+        const startPoint = dir2d.clone().multiplyScalar(startDist);
+        const endPoint = dir2d.clone().multiplyScalar(startDist + armLength);
+
+        const geo = new BufferGeometry().setFromPoints([startPoint, endPoint]);
+        const line = new Line(geo, lineMaterial);
+        line.name = `WeldArm${i+1}`;
+        line.userData = { pipeline: pipelineRef, type: block.type, rawBlock: block };
+        weldGroup.add(line);
     });
 
-    // create central cylinder along local Y (becomes pipe axis after align)
-    const cylRadius = radius * 0.2;
-    const cylLength = radius * 0.1;
-    const circGeo = new CylinderGeometry(cylRadius, cylRadius, cylLength, GEOMETRY_SEGMENTS);
-    // cylinder centered at origin
-    const circle = new Mesh(circGeo, material);
+    // Central circle in local XZ plane
+    const circleGeo = new BufferGeometry();
+    const circlePoints = [];
+    for (let i = 0; i <= GEOMETRY_SEGMENTS; i++) {
+        const theta = (i / GEOMETRY_SEGMENTS) * Math.PI * 2;
+        circlePoints.push(new Vector3(
+            Math.cos(theta) * radius * 1.1,
+            0,
+            Math.sin(theta) * radius * 1.1
+        ));
+    }
+    circleGeo.setFromPoints(circlePoints);
+    const circle = new LineLoop(circleGeo, lineMaterial);
     circle.name = 'WeldCircle';
     circle.userData = weldGroup.children[0].userData;
     weldGroup.add(circle);
 
-    // align entire group to pipe direction and move to center
+    // Invisible pick volume: cylinder around weld
+    const pickRadius = (startDist + armLength) * 1.0;
+    const pickHeight = armLength * 0.5;
+    const pickGeo = new CylinderGeometry(pickRadius, pickRadius, pickHeight, GEOMETRY_SEGMENTS);
+    const pickMat = HITBOX_MATERIAL.clone();
+    const pickMesh = new Mesh(pickGeo, pickMat);
+    pickMesh.name = 'WeldPicker';
+    pickMesh.userData = { pipeline: pipelineRef, type: block.type, rawBlock: block };
+    weldGroup.add(pickMesh);
+
+    // Apply alignment and position
     weldGroup.applyQuaternion(alignQuat);
-    weldGroup.position.copy(center);
+    weldGroup.position.copy(point);
 
     return weldGroup;
 }

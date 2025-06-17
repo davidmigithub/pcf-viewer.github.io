@@ -184,7 +184,7 @@ export class SceneBuilder {
         // Persist state
         this.typeVisibility[type] = visible;
         this.scene.traverse(obj => {
-            if (obj.isMesh && obj.userData.type === type) {
+            if ((obj.isMesh || obj.isLine) && obj.userData?.type === type) {
                 obj.visible = visible;
             }
         });
@@ -226,27 +226,48 @@ export class SceneBuilder {
 
     _handlePick(clientX, clientY) {
         this.raycaster.setFromCamera(this.pointer, this.camera);
-        const visibleMeshes = [];
+        // collect only Meshes and ignore the invisible WeldPicker
+        const pickables = [];
         this.scene.traverse(obj => {
-            if (obj.isMesh && obj.visible) visibleMeshes.push(obj);
+            if (obj.isMesh && obj.visible) pickables.push(obj);
         });
-        const hits = this.raycaster.intersectObjects(visibleMeshes, true);
+        const hits = this.raycaster.intersectObjects(pickables, true);
+
         if (hits.length > 0) {
             const picked = hits[0].object;
+
+            // if it's the WeldPicker, only show info, no highlight
+            if (picked.name === 'WeldPicker') {
+                this.ui.showInfo(picked.userData.rawBlock, clientX, clientY);
+                return;
+            }
+
             if (this.INTERSECTED !== picked) {
                 if (this.INTERSECTED) this._clearSelection();
                 this.INTERSECTED = picked;
                 const mat = picked.material;
+
+                // save base color
                 this.currentColor = mat.color.clone();
-                this.currentEmissive = mat.emissive.clone();
-                this.currentEmissiveIntensity = mat.emissiveIntensity;
-                this.currentOpacity = mat.opacity;
-                this.currentTransparent = mat.transparent;
-                mat.color.copy(HIGHLIGHT_COLOR);
-                mat.emissive.copy(HIGHLIGHT_EMISSIVE);
-                mat.emissiveIntensity = HIGHLIGHT_EMISSIVE_INTENSITY;
-                mat.opacity = HIGHLIGHT_OPACITY;
-                mat.transparent = true;
+
+                if (mat.emissive !== undefined) {
+                    // standard Mesh material: save emissive + transparency
+                    this.currentEmissive = mat.emissive.clone();
+                    this.currentEmissiveIntensity = mat.emissiveIntensity;
+                    this.currentOpacity = mat.opacity;
+                    this.currentTransparent = mat.transparent;
+
+                    // apply highlight
+                    mat.color.copy(HIGHLIGHT_COLOR);
+                    mat.emissive.copy(HIGHLIGHT_EMISSIVE);
+                    mat.emissiveIntensity = HIGHLIGHT_EMISSIVE_INTENSITY;
+                    mat.opacity = HIGHLIGHT_OPACITY;
+                    mat.transparent = true;
+                } else {
+                    // other material types: only change color
+                    mat.color.copy(HIGHLIGHT_COLOR);
+                }
+
                 this._showInfo(picked.userData.rawBlock, clientX, clientY);
             }
         } else {
