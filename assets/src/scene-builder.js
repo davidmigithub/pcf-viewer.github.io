@@ -233,6 +233,9 @@ export class SceneBuilder {
         });
         const hits = this.raycaster.intersectObjects(pickables, true);
 
+        // Clear any previous highlight
+        this._clearSelection();
+
         if (hits.length > 0) {
             const picked = hits[0].object;
 
