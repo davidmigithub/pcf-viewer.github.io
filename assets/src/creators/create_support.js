@@ -12,6 +12,7 @@ import {
 } from "../vendor_mods/three.module.js";
 import { HITBOX_MATERIAL, GEOMETRY_SEGMENTS, SUPPORT_MATERIAL } from "../settings.js";
 import { getPipeRadiusAtCoords, getPipeDirectionAtCoords } from "../utils/helpers.js";
+import { createPlaceholder } from "./create_placeholder.js";
 
 /**
  * Create a support symbol based on SKEY.
@@ -55,7 +56,7 @@ export function createSupport(block, pipelineRef, units, pipelines) {
             // Arrowhead geometry
             const arrowLength = R * 0.2;
             const baseRadius = arrowLength * 0.5;
-            const inset = arrowLength * 1.2;
+            const inset = arrowLength * 1.5;
 
             const coneGeo = new ConeGeometry(baseRadius, arrowLength, 8);
             coneGeo.rotateX(Math.PI / 2);
@@ -94,15 +95,5 @@ export function createSupport(block, pipelineRef, units, pipelines) {
     }
 
     // Non-ANCH: just add pick volume and position
-    const pickR = units.coordScale * 0.6;
-    const pickGeo = new CylinderGeometry(pickR, pickR, pickR * 0.1, 8);
-    const pickMat = HITBOX_MATERIAL.clone();
-    pickMat.depthTest = false;
-    const pickMesh = new Mesh(pickGeo, pickMat);
-    pickMesh.name = 'SupportPick';
-    pickMesh.userData = supportGroup.userData;
-    supportGroup.add(pickMesh);
-
-    supportGroup.position.copy(center);
-    return supportGroup;
+    return createPlaceholder(block, pipelineRef, units);
 }
