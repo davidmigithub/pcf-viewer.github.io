@@ -221,55 +221,53 @@ export class SceneBuilder {
     }
 
     _clearSelection() {
-        if (this.INTERSECTED) {
-            const mat = this.INTERSECTED.material;
-            mat.color.copy(this.currentColor);
+        if (!this.INTERSECTED) return;
+
+        const mat = this.INTERSECTED.material;
+        mat.color.copy(this.currentColor);
+
+        if (mat.emissive !== undefined && this.currentEmissive) {
             mat.emissive.copy(this.currentEmissive);
             mat.emissiveIntensity = this.currentEmissiveIntensity;
-            mat.opacity = this.currentOpacity;
-            mat.transparent = this.currentTransparent;
-            this.INTERSECTED = null;
         }
+
+        mat.opacity = this.currentOpacity;
+        mat.transparent = this.currentTransparent;
+
+        this.INTERSECTED = null;
     }
 
     _handlePick(clientX, clientY) {
         this.raycaster.setFromCamera(this.pointer, this.camera);
-        // collect only Meshes and ignore the invisible WeldPicker
         const pickables = [];
         this.scene.traverse(obj => {
             if (obj.isMesh && obj.visible) pickables.push(obj);
         });
         const hits = this.raycaster.intersectObjects(pickables, true);
 
-        // Clear any previous highlight
         this._clearSelection();
 
         if (hits.length > 0) {
             const picked = hits[0].object;
-
             if (this.INTERSECTED !== picked) {
                 if (this.INTERSECTED) this._clearSelection();
                 this.INTERSECTED = picked;
                 const mat = picked.material;
 
-                // save base color
                 this.currentColor = mat.color.clone();
+                this.currentOpacity = mat.opacity;
+                this.currentTransparent = mat.transparent;
 
                 if (mat.emissive !== undefined) {
-                    // standard Mesh material: save emissive + transparency
                     this.currentEmissive = mat.emissive.clone();
                     this.currentEmissiveIntensity = mat.emissiveIntensity;
-                    this.currentOpacity = mat.opacity;
-                    this.currentTransparent = mat.transparent;
 
-                    // apply highlight
                     mat.color.copy(HIGHLIGHT_COLOR);
                     mat.emissive.copy(HIGHLIGHT_EMISSIVE);
                     mat.emissiveIntensity = HIGHLIGHT_EMISSIVE_INTENSITY;
                     mat.opacity = HIGHLIGHT_OPACITY;
                     mat.transparent = true;
                 } else {
-                    // other material types: only change color
                     mat.color.copy(HIGHLIGHT_COLOR);
                 }
 
@@ -280,6 +278,7 @@ export class SceneBuilder {
             this.ui.hideInfo();
         }
     }
+
 
     _showInfo(userData, x, y) {
         this.ui.showInfo(userData, x, y);

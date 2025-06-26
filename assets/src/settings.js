@@ -14,6 +14,7 @@ export const TEE_MATERIAL =                     new MeshStandardMaterial({ color
 export const VALVE_MATERIAL =                   new MeshStandardMaterial({ color: 0xebbd34, transparent: true, opacity: 1.0 });
 export const PLACEHOLDER_MATERIAL =             new MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.5, depthWrite: false });
 export const WELD_MATERIAL =                    new MeshStandardMaterial({ color: 0xff0000, transparent: true, opacity: 1.0 });
+export const SUPPORT_MATERIAL =                 new MeshStandardMaterial({ color: 0x00ff00, transparent: true, opacity: 1.0 });
 export const HITBOX_MATERIAL =                  new MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.00, depthWrite: false });
 // export const VALVEANGLE_MATERIAL =              new MeshStandardMaterial({ color: 0xffff00, transparent: true, opacity: 1.0 });
 // export const REDUCERECC_MATERIAL =              new MeshStandardMaterial({ color: 0x11a6a8, transparent: true, opacity: 1.0 });

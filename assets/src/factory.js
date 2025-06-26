@@ -8,6 +8,7 @@ import { createCap } from "./creators/create_cap.js";
 import { createOlet } from "./creators/create_olet.js";
 import { createValve } from "./creators/create_valve.js";
 import { createWeld } from "./creators/create_weld.js";
+import { createSupport } from "./creators/create_support.js";
 import { Vector3 } from "./vendor_mods/three.module.js";
 
 // Regex to match keypoints
@@ -25,6 +26,8 @@ export class ComponentFactory {
         let mesh = null;
 
         const currentPipeline = this.pipelines.find(plc => plc.reference === pipelineRef);
+
+        console.log('ComponentFactory.build →', block.type, 'SKEY=', block.skey);
 
         switch (block.type.toUpperCase()) {
             case 'PIPE':
@@ -54,6 +57,9 @@ export class ComponentFactory {
                 break;
             case 'WELD':
                 mesh = createWeld(block, pipelineRef, this.units, this.pipelines);
+                break;
+            case 'SUPPORT':
+                mesh = createSupport(block, pipelineRef, this.units, this.pipelines);
                 break;
             default:
                 console.warn('ComponentFactory: Unsupported component type', block.type);
@@ -134,5 +140,45 @@ export class ComponentFactory {
             );
         }
         return dummyDir.clone();
+    }
+
+    getPipeRadiusAtCoords(targetCoords) {
+        const [tx, ty, tz] = targetCoords;
+        const point = new Vector3(
+            tx * this.units.coordScale,
+            ty * this.units.coordScale,
+            tz * this.units.coordScale
+        );
+        let foundRadius = this.units.coordScale; // fallback
+        let minDist = Infinity;
+        const tolerance = this.units.coordScale * 0.01; // 1 cm tolerance
+
+        for (const pipeline of this.pipelines) {
+            for (const block of (pipeline.components || [])) {
+                if (block.type.toUpperCase() !== 'PIPE') continue;
+                const ends = block.geometry['END-POINT'];
+                if (!ends || ends.length !== 2) continue;
+
+                const p1 = new Vector3(...ends[0].coords).multiplyScalar(this.units.coordScale);
+                const p2 = new Vector3(...ends[1].coords).multiplyScalar(this.units.coordScale);
+                const dir = p2.clone().sub(p1);
+                const lenSq = dir.lengthSq();
+                if (lenSq === 0) continue;
+
+                // project and compute distance
+                const t = Math.max(0, Math.min(1, point.clone().sub(p1).dot(dir) / lenSq));
+                const proj = p1.clone().add(dir.multiplyScalar(t));
+                const dist = proj.distanceTo(point);
+                if (dist <= tolerance && dist < minDist) {
+                    minDist = dist;
+                    const rawDia = parseFloat(ends[0].nominal);
+                    foundRadius = isNaN(rawDia)
+                        ? this.units.coordScale
+                        : (rawDia * this.units.boreScale) / 2;
+                }
+            }
+        }
+        console.log('radius: ', foundRadius)
+        return foundRadius;
     }
 }
