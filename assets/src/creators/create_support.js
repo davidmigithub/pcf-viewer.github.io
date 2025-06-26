@@ -57,7 +57,7 @@ export function createSupport(block, pipelineRef, units, pipelines) {
             const baseRadius = arrowLength * 0.5;
             const inset = arrowLength * 1.2;
 
-            const coneGeo = new ConeGeometry(baseRadius, arrowLength, GEOMETRY_SEGMENTS);
+            const coneGeo = new ConeGeometry(baseRadius, arrowLength, 8);
             coneGeo.rotateX(Math.PI / 2);
 
             [true, false].forEach(isPositive => {
@@ -74,7 +74,7 @@ export function createSupport(block, pipelineRef, units, pipelines) {
 
         // 4) Invisible pick volume
         const pickR = units.coordScale * 0.6;
-        const pickGeo = new CylinderGeometry(pickR, pickR, pickR * 0.1, GEOMETRY_SEGMENTS);
+        const pickGeo = new CylinderGeometry(pickR, pickR, pickR * 0.1, 8);
         const pickMat = HITBOX_MATERIAL.clone();
         pickMat.depthTest = false;
         const pickMesh = new Mesh(pickGeo, pickMat);
@@ -95,7 +95,7 @@ export function createSupport(block, pipelineRef, units, pipelines) {
 
     // Non-ANCH: just add pick volume and position
     const pickR = units.coordScale * 0.6;
-    const pickGeo = new CylinderGeometry(pickR, pickR, pickR * 0.1, GEOMETRY_SEGMENTS);
+    const pickGeo = new CylinderGeometry(pickR, pickR, pickR * 0.1, 8);
     const pickMat = HITBOX_MATERIAL.clone();
     pickMat.depthTest = false;
     const pickMesh = new Mesh(pickGeo, pickMat);

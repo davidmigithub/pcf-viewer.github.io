@@ -89,7 +89,7 @@ export function createWeld(block, pipelineRef, units, pipelines) {
     // 6) Invisible pick volume
     const pickRadius = startDist + armLength;
     const pickHeight = armLength * 0.1;
-    const pickGeo = new CylinderGeometry(pickRadius, pickRadius, pickHeight, GEOMETRY_SEGMENTS);
+    const pickGeo = new CylinderGeometry(pickRadius, pickRadius, pickHeight, 8);
     const pickMat = HITBOX_MATERIAL.clone();
     pickMat.depthTest = false;
     const pickMesh = new Mesh(pickGeo, pickMat);
