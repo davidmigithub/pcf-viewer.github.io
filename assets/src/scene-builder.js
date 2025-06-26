@@ -55,8 +55,16 @@ export class SceneBuilder {
         );
         this.scene.add(hemi);
 
-        this.helper = new ViewHelper(this.camera, this.renderer, VIEW_HELPER_POSITION);
+        // this.helper = new ViewHelper(this.camera, this.renderer, VIEW_HELPER_POSITION);
+        // this.helper.setControls(this.controls);
+        this.helper = new ViewHelper(
+            this.camera,
+            this.renderer,
+            "top-right", // needs to be fixed
+            128
+        );
         this.helper.setControls(this.controls);
+
 
         this.raycaster = new Raycaster();
         this.pointer = new Vector2();
@@ -238,7 +246,7 @@ export class SceneBuilder {
 
         if (hits.length > 0) {
             const picked = hits[0].object;
-            
+
             if (this.INTERSECTED !== picked) {
                 if (this.INTERSECTED) this._clearSelection();
                 this.INTERSECTED = picked;
@@ -289,10 +297,21 @@ export class SceneBuilder {
 
     _animate() {
         this.stats.begin();
+
         requestAnimationFrame(() => this._animate());
+
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+
+        this.renderer.setSize(width, height, true);
+
         this.renderer.clear();
         this.renderer.render(this.scene, this.camera);
-        this.helper.render();
+
+        this.helper?.render();
         this.stats.end();
     }
 }
