@@ -13,7 +13,7 @@ function createOlet(block, pipelineRef, units) {
     const centreArr = block.geometry['CENTRE-POINT'];
     const branchArr = block.geometry['BRANCH1-POINT'];
     if (!centreArr || centreArr.length < 1 || !branchArr || branchArr.length < 1) {
-        console.warn('createOlet: Missing CENTRE-POINT (1) or BRANCH1-POINT (1)', block);
+        console.warn('createOlet: Missing CENTRE-POINT (1) or BRANCH1-POINT (1)');
         return null;
     }
 

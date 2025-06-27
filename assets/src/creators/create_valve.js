@@ -20,7 +20,7 @@ import { createPipe } from "./create_pipe.js";
 function createValve(block, pipelineRef, units) {
     const ends = block.geometry['END-POINT'];
     if (!ends || ends.length < 2) {
-        console.warn('createValve: need two END-POINTs', block);
+        console.warn('createValve: need two END-POINTs');
         return null;
     }
 
@@ -51,7 +51,7 @@ function createValve(block, pipelineRef, units) {
     const dir2 = new Vector3().subVectors(centre, end);
     const len1 = dir1.length(), len2 = dir2.length();
     if (len1 === 0 || len2 === 0) {
-        console.warn('createValve: zero-length segment', block);
+        console.warn('createValve: zero-length segment');
         return null;
     }
 

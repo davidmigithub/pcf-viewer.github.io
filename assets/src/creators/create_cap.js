@@ -14,7 +14,7 @@ import { CAP_MATERIAL, GEOMETRY_SEGMENTS } from "../settings.js";
 function createCap(block, pipelineRef, units) {
     const ends = block.geometry['END-POINT'];
     if (!ends || ends.length === 0) {
-        console.warn('createCap: Missing END-POINT for CAP', block);
+        console.warn('createCap: Missing END-POINT for CAP');
         return null;
     }
 

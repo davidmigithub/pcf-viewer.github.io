@@ -15,7 +15,7 @@ function createBend(block, pipelineRef, units) {
     const ends = block.geometry['END-POINT'];
     const centre = block.geometry['CENTRE-POINT']?.[0];
     if (!ends || ends.length < 2 || !centre) {
-        console.warn('createBend: Missing END-POINT or CENTRE-POINT for BEND', block);
+        console.warn('createBend: Missing END-POINT or CENTRE-POINT for BEND');
         return null;
     }
 

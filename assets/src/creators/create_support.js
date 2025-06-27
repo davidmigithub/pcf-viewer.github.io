@@ -21,7 +21,7 @@ export function createSupport(block, pipelineRef, units, pipelines) {
     // 1) Determine raw position from CO-ORDS
     const raw = block.geometry['CO-ORDS']?.[0]?.coords;
     if (!raw) {
-        console.warn('createSupport: missing CO-ORDS', block);
+        console.warn('createSupport: missing CO-ORDS');
         return null;
     }
     const center = new Vector3(...raw.map(c => c * units.coordScale));

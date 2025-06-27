@@ -129,7 +129,7 @@ export function computeDirectionAtExternalKeypoint(targetCoords, pipelines, excl
             if (!v1.equals(v2)) {
                 const direction = v2.clone().sub(v1).normalize();
                 console.log(
-                    `computeDirectionAtExternalKeypoint: best-case direction at [${tx},${ty},${tz}]`,
+                    'computeDirectionAtExternalKeypoint →',
                     direction
                 );
                 return direction;

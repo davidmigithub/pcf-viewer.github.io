@@ -14,7 +14,7 @@ function createReducerCon(block, pipelineRef, units) {
     // END-POINT liefert zwei Punkte mit Koordinaten und nominalem Durchmesser
     const ends = block.geometry['END-POINT'];
     if (!ends || ends.length < 2) {
-        console.warn('createReducerConcentric: Missing END-POINT for REDUCER-CONCENTRIC', block);
+        console.warn('createReducerConcentric: Missing END-POINT for REDUCER-CONCENTRIC');
         return null;
     }
 

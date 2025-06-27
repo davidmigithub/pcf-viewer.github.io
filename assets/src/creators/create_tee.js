@@ -15,7 +15,7 @@ function createTee(block, pipelineRef, units) {
     const branchArr = block.geometry['BRANCH1-POINT']; // Abzweig-Endpunkt
 
     if (!ends || ends.length < 2 || !centreArr || centreArr.length < 1 || !branchArr || branchArr.length < 1) {
-        console.warn('createTee: Missing END-POINT (2), CENTRE-POINT (1) oder BRANCH1-POINT (1) für TEE', block);
+        console.warn('createTee: Missing END-POINT (2), CENTRE-POINT (1) or BRANCH1-POINT (1) for TEE');
         return null;
     }
 
@@ -45,7 +45,7 @@ function createTee(block, pipelineRef, units) {
     const rawDiaMain = typeof ends[0].nominal === 'number' ? ends[0].nominal : parseFloat(ends[0].nominal);
     const rawDiaBr = typeof branchArr[0].nominal === 'number' ? branchArr[0].nominal : parseFloat(branchArr[0].nominal);
     if (isNaN(rawDiaMain) || isNaN(rawDiaBr)) {
-        console.warn('createTee: Ungültiger nominaler Durchmesser', ends[0].nominal, branchArr[0].nominal);
+        console.warn('createTee: Invalid nominal diameter', ends[0].nominal, branchArr[0].nominal);
         return null;
     }
     const radiusMain = (rawDiaMain * units.boreScale) / 2;

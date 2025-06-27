@@ -15,7 +15,7 @@ function createFlange(block, pipelineRef, units) {
     const ends = block.geometry['END-POINT']; // Erwartet zwei Punkte: [start, end]
 
     if (!ends || ends.length < 2) {
-        console.warn('createFlange: Missing END-POINT (2) für FLANGE', block);
+        console.warn('createFlange: Missing END-POINT (2) für FLANGE');
         return null;
     }
 
@@ -33,7 +33,7 @@ function createFlange(block, pipelineRef, units) {
 
     // Prüfen, ob Punkte identisch sind
     if (start.distanceTo(end) === 0) {
-        console.warn('createFlange: Start- und Endpunkt sind identisch – kein Flansch erstellt', block);
+        console.warn('createFlange: Start- and endpoint are the same. No mesh created.');
         return null;
     }
 
@@ -41,7 +41,7 @@ function createFlange(block, pipelineRef, units) {
     const rawDia1 = typeof ends[0].nominal === 'number' ? ends[0].nominal : parseFloat(ends[0].nominal);
     const rawDia2 = typeof ends[1].nominal === 'number' ? ends[1].nominal : parseFloat(ends[1].nominal);
     if (isNaN(rawDia1) || isNaN(rawDia2)) {
-        console.warn('createFlange: Ungültiger nominaler Durchmesser', ends[0].nominal, ends[1].nominal);
+        console.warn('createFlange: could not find diameter', ends[0].nominal, ends[1].nominal);
         return null;
     }
     // Beide Durchmesser sollten gleich sein, wir nehmen den ersten

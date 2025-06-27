@@ -24,12 +24,10 @@ export function createWeld(block, pipelineRef, units, pipelines) {
     // 1) Coordinates and direction
     const rawCoords = block.geometry['END-POINT']?.[0]?.coords;
     if (!rawCoords) {
-        console.warn('createWeld: missing END-POINT', block);
+        console.warn('createWeld: missing END-POINT');
         return null;
     }
     const direction = computeDirectionAtExternalKeypoint(rawCoords, pipelines, block);
-
-    console.log('createWeld: direction from helper:', direction, block);
 
     // 2) Compute position: midpoint if two endpoints
     const ends = block.geometry['END-POINT'];

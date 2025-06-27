@@ -14,7 +14,7 @@ import { PIPE_MATERIAL, GEOMETRY_SEGMENTS } from "../settings.js";
 function createPipe(block, pipelineRef, units) {
     const endArr = block.geometry['END-POINT'];
     if (!endArr || endArr.length < 2) {
-        console.warn('createPipe: Need two END-POINT entries for PIPE', block);
+        console.warn('createPipe: Need two END-POINT entries for PIPE');
         return null;
     }
 
