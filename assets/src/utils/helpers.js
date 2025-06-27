@@ -1,32 +1,34 @@
-import { Vector3 } from "../vendor_mods/three.module.js";
+import { Vector3, Line3 } from "../vendor_mods/three.module.js";
 
 export function getPipeRadiusAtCoords(targetCoords, units, pipelines) {
-    const [tx, ty, tz] = targetCoords;
+    // Convert input coordinates to world space (scaled)
     const point = new Vector3(
-        tx * units.coordScale,
-        ty * units.coordScale,
-        tz * units.coordScale
+        targetCoords[0] * units.coordScale,
+        targetCoords[1] * units.coordScale,
+        targetCoords[2] * units.coordScale
     );
+
     let foundRadius = units.coordScale;  // fallback radius
     let minDist = Infinity;
-    const tolerance = units.coordScale * 0.01;  // 1 cm tolerance
+    const tolerance = 0.01;  // 1 cm tolerance
 
+    // Iterate through all pipelines and their components
     for (const pipeline of pipelines) {
         for (const block of (pipeline.components || [])) {
             if (block.type.toUpperCase() !== 'PIPE') continue;
             const ends = block.geometry['END-POINT'];
             if (!ends || ends.length !== 2) continue;
 
+            // Define endpoints in world space
             const p1 = new Vector3(...ends[0].coords).multiplyScalar(units.coordScale);
             const p2 = new Vector3(...ends[1].coords).multiplyScalar(units.coordScale);
-            const dir = p2.clone().sub(p1);
-            const lenSq = dir.lengthSq();
-            if (lenSq === 0) continue;
 
-            // project point onto line segment
-            const t = Math.max(0, Math.min(1, point.clone().sub(p1).dot(dir) / lenSq));
-            const proj = p1.clone().add(dir.multiplyScalar(t));
+            // Create a line segment and get the closest point in 3D
+            const segment = new Line3(p1, p2);
+            const proj = segment.closestPointToPoint(point, true, new Vector3());
             const dist = proj.distanceTo(point);
+
+            // If within tolerance and closer than previous, capture radius
             if (dist <= tolerance && dist < minDist) {
                 minDist = dist;
                 const rawDia = parseFloat(ends[0].nominal);
