@@ -43,7 +43,6 @@ function createPlaceholder(block, pipelineRef, units) {
     }
 
     if (points.length === 0) {
-        console.warn('createPlaceholder: Kein gültiger Punkt mit Nominaldurchmesser gefunden:', block);
         return null;
     }
 

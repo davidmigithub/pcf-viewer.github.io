@@ -6,7 +6,7 @@ export class PcfParser {
     }
 
     parse() {
-        console.groupCollapsed('🟡 PcfParser.parse');
+        console.groupCollapsed('🟡 PcfParser     → parse');
         console.log('Starting parse of PCF text, total lines:', this.lines.length);
 
         // 1. Abschnittsgrenzen finden

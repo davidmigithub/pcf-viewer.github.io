@@ -84,6 +84,7 @@ export function getPipeDirectionAtCoords(targetCoords, units, pipelines) {
     }
   }
 
+  console.log('getPipeDirectionAtCoords →', bestDir);
   return bestDir;
 }
 

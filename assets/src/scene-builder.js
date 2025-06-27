@@ -116,6 +116,7 @@ export class SceneBuilder {
         const fileGroup = new Group();
         fileGroup.name = fileName;
 
+        console.groupCollapsed('🔵 SceneBuilder  → factory');
         pipelinesArray.forEach(plc => {
             const uniqueName = `${fileName}|${plc.reference}`;
             const plGroup = new Group();
@@ -131,6 +132,7 @@ export class SceneBuilder {
             });
             fileGroup.add(plGroup);
         });
+        console.groupEnd();
 
         this.rootGroup.add(fileGroup);
 

@@ -26,8 +26,9 @@ export class ComponentFactory {
 
         const currentPipeline = this.pipelines.find(plc => plc.reference === pipelineRef);
 
-        console.log('ComponentFactory.build →', block.type, 'SKEY=', block.skey);
-
+        console.groupCollapsed('◯ ComponentFactory → ', block.type.toUpperCase());
+        console.log('Switch parameters →', block.type, ';', 'SKEY=', block.skey);
+        
         switch (block.type.toUpperCase()) {
             case 'PIPE':
                 mesh = createPipe(block, pipelineRef, this.units, this.pipelines);
@@ -61,9 +62,21 @@ export class ComponentFactory {
                 mesh = createSupport(block, pipelineRef, this.units, this.pipelines);
                 break;
             default:
-                console.warn('ComponentFactory: Unsupported component type', block.type);
-                return createPlaceholder(block, pipelineRef, this.units);
+                mesh = createPlaceholder(block, pipelineRef, this.units);
+                break;
         }
+
+        console.log('ℹ️', 'Block → ', block);
+        console.log('ℹ️', 'Mesh  → ', mesh);
+
+        if(mesh){
+            console.log('✅', 'created mesh successfully');
+        }
+        else {
+            console.log('❌', 'could not create mesh');
+        }
+
+        console.groupEnd();
 
         return mesh;
     }
