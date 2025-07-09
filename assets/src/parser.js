@@ -61,7 +61,7 @@ export class PcfParser {
 
     _parseUnits(lines) {
         console.log('Parsing UNITS section');
-        const scaleMap = { MM: 0.001, CM: 0.01, M: 1, IN: 0.0254, FT: 0.3048 };
+        const scaleMap = { MM: 0.001, CM: 0.01, M: 1, IN: 0.0254, INCH: 0.0254, FT: 0.3048 };
         let boreUnit = '', coordUnit = '';
         lines.forEach(raw => {
             const trimmed = raw.trim();
